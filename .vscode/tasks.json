@@ -1,0 +1,50 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "C Build & Run",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "run",
+            ],
+            "group": "build",
+            "dependsOn": "C Build",
+            "presentation": {
+                "reveal": "always"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "C Build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "build",
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Nim Build & Run",
+            "type": "shell",
+            "command": "nim",
+            "args": [
+                "-d:build",
+                "make.nims"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
