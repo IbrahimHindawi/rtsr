@@ -1,3 +1,7 @@
+//printf("%I64u\n", sizeof(int));
+//printf("%llu\n", sizeof(i32));
+//printf("%llu\n", sizeof(i64));
+
 sdl2 mingw install:
     https://www.libsdl.org/download-2.0.php
     SDL2-devel-2.0.14-mingw
