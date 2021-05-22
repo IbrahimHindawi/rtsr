@@ -1,4 +1,5 @@
 import sdl2
+import ptrops
 
 var
   window: WindowPtr
@@ -8,6 +9,7 @@ var
   windowWidth = 800
   windowHeight = 600
   colorBuffer: ptr uint32
+  colorBufferTexture: TexturePtr
 
 proc initialize_window(): bool =
   var res = init(INIT_EVERYTHING)
@@ -31,6 +33,8 @@ proc setup(): void =
   colorBuffer = cast[ptr uint32]( alloc( sizeof(uint32) * windowWidth * windowHeight) )
   if colorBuffer == nil:
     echo "Unable to initialize memory."
+  colorBufferTexture = createTexture(renderer, SDL_PIXELFORMAT_BGRA8888, SDL_TEXTUREACCESS_STREAMING, windowWidth.int32, windowHeight.int32)
+  
 
 proc input(): void =
   var event: Event
@@ -47,9 +51,22 @@ proc input(): void =
 proc update(): void =
   discard
 
+proc renderColorBuffer(): void =
+  updateTexture(colorBufferTexture, nil, colorBuffer, (windowWidth * sizeof(uint32)).int32)
+  copy(renderer, colorBufferTexture, nil, nil)
+
+proc clearColorBuffer(color:uint32): void =
+  for y in 0..<windowHeight:
+    for x in 0..<windowWidth:
+      colorBuffer[(windowWidth * y) + x] = color
+
 proc render(): void =
-  setDrawColor(renderer, 32, 32, 32, 255)
+  setDrawColor(renderer, 0, 0, 0, 255)
   clear(renderer)
+
+  renderColorBuffer()
+  clearColorBuffer(0xFFFF00FF'u32)
+
   present(renderer)
 
 proc destroy(): void = 

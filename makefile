@@ -1,7 +1,8 @@
 build:
 	gcc -Wall \
+	-g \
 	-Wfatal-errors \
-	-std=c99 \
+	-std=c89 \
 	./src/main.c \
 	-I"C:\libsdl\include" \
 	-L"C:\libsdl\lib" \

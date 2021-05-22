@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            //"program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "bin\\cprog.exe",
+            "args": [],
+            "stopAtEntry": false,
+            //"cwd": "C:/Users/Administrator/nim-1.4.6/dist/mingw64/bin",
+            "cwd": "C:/Users/Administrator/devel-render/rtsr",
+            //"cwd": "${workspaceFolder}",//"C:/Users/Administrator/devel-render/rtsr",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:\\Users\\Administrator\\nim-1.4.6\\dist\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                { "description": "Enable pretty-printing for gdb", "text": "-enable-pretty-printing", "ignoreFailures": true }
+            ],
+            "preLaunchTask": "C Build"
+        }
+    ]
+}

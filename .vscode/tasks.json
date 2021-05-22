@@ -1,9 +1,7 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
+	"version": "2.0.0",
+	"tasks": [
+		{
             "label": "C Build & Run",
             "type": "shell",
             "command": "make",
@@ -18,20 +16,19 @@
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
         },
-        {
-            "label": "C Build",
-            "type": "shell",
-            "command": "make",
-            "args": [
-                "build",
-            ],
-            "presentation": {
-                "reveal": "always"
-            },
-            // Use the standard MS compiler pattern to detect errors, warnings and infos
-            "problemMatcher": "$msCompile"
-        },
-        {
+		{
+			"type": "cppbuild",
+			"label": "C Build",
+			"command": "make",
+			"args": ["build"],
+			"options": {
+				"cwd": "${workspaceFolder}",
+			},
+			"problemMatcher": ["$gcc"],
+			"group": "build",
+			
+		},
+		{
             "label": "Nim Build & Run",
             "type": "shell",
             "command": "nim",
@@ -46,5 +43,5 @@
             // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
         }
-    ]
+	]
 }
