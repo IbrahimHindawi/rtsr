@@ -23,7 +23,13 @@ bool initialize_window(void) {
         printf("%s\n", SDL_GetErrorMsg(error_string, 256));
         return false;
     }
-    window = SDL_CreateWindow( "RTSR", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 640, SDL_WINDOW_BORDERLESS);
+    
+    SDL_DisplayMode display_mode;
+    SDL_GetCurrentDisplayMode(0, &display_mode);
+    window_width = display_mode.w;
+    window_height = display_mode.h;
+
+    window = SDL_CreateWindow( "RTSR", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_BORDERLESS);
     if (!window) {
         fprintf(stderr, "Error creating SDL Window!");
         return false;
@@ -33,6 +39,7 @@ bool initialize_window(void) {
         fprintf(stderr, "Error creating SDL Renderer!");
         return false;
     }
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     return true;
 }
 void setup(void) {
@@ -67,11 +74,30 @@ void render_color_buffer(void) {
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
 void clear_color_buffer(uint32_t color) {
-    int y = 0;
-    int x = 0;
+    int y, x;
     for (y = 0; y < window_height; y++) {
         for (x = 0; x < window_width; x++) {
             color_buffer[(window_width * y) + x] = color;
+        }
+    }
+}
+void draw_grid(uint32_t color, uint32_t grid_size) {
+    int y, x;
+    for (y = 0; y < window_height; y++) {
+        for (x = 0; x < window_width; x++) {
+            color_buffer[y * window_width + x] = !(x % grid_size && y % grid_size) * color;
+        }
+    }
+}
+void draw_rectangle(int posx, int posy, int w, int h, uint32_t color) {
+    int y, x;
+    for (y = 0; y < window_height; y++) {
+        for (x = 0; x < window_width; x++) {
+            /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
+            if (x > posx && x < posx+w && y > posy && y < posy+h) {
+                color_buffer[y * window_width + x] = color;
+            }
+            
         }
     }
 }
@@ -81,6 +107,8 @@ void render(void) {
     
     render_color_buffer();
     clear_color_buffer(0xFFFF00FF);
+    draw_grid(0xFF0000FF, 50);
+    draw_rectangle(100, 100, 60, 160, 0x00FF00FF);
 
     SDL_RenderPresent(renderer);
 }

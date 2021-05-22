@@ -21,11 +21,11 @@ proc initialize_window(): bool =
   
   window = createWindow("RTSR", SDL_WINDOWPOS_CENTERED.int32, SDL_WINDOWPOS_CENTERED, 800, 640, SDL_WINDOW_BORDERLESS)  
   if (window == nil):
-    echo "failed to create Window!"
+    echo "Error creating SDL Window!"
 
   renderer = createRenderer(window, -1, 0)
   if renderer == nil:
-    echo "failed to create Renderer!"
+    echo "Error creating SDL Renderer!"
 
   result = true  
 
@@ -65,7 +65,7 @@ proc render(): void =
   clear(renderer)
 
   renderColorBuffer()
-  clearColorBuffer(0xFFFF00FF'u32)
+  clearColorBuffer(0x00FFFFFF'u32)
 
   present(renderer)
 
@@ -82,4 +82,5 @@ proc main(): void =
     render()
   dealloc(colorBuffer)
   destroy()
+
 main()
