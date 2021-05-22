@@ -4,6 +4,7 @@ build:
 	-Wfatal-errors \
 	-std=c89 \
 	./src/main.c \
+	./src/display.c \
 	-I"C:\libsdl\include" \
 	-L"C:\libsdl\lib" \
 	-lmingw32 \

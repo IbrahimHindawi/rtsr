@@ -4,44 +4,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "defines.h"
+#include "display.h"
 
-#define SDL_error -1
+bool is_running;
 
-static bool is_running = false;
-static SDL_Window* window = NULL;
-static SDL_Renderer* renderer = NULL;
-
-static SDL_Texture* color_buffer_texture = NULL;
-static uint32_t* color_buffer = NULL;
-static int window_width = 800;
-static int window_height = 600;
-
-bool initialize_window(void) {
-    int32_t result =  SDL_Init(SDL_INIT_EVERYTHING);
-    if (result == SDL_error) {
-        char *error_string = "";
-        printf("%s\n", SDL_GetErrorMsg(error_string, 256));
-        return false;
-    }
-    
-    SDL_DisplayMode display_mode;
-    SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w;
-    window_height = display_mode.h;
-
-    window = SDL_CreateWindow( "RTSR", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_BORDERLESS);
-    if (!window) {
-        fprintf(stderr, "Error creating SDL Window!");
-        return false;
-    }
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    if (!renderer) {
-        fprintf(stderr, "Error creating SDL Renderer!");
-        return false;
-    }
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-    return true;
-}
 void setup(void) {
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
@@ -69,38 +35,6 @@ void input(void) {
 void update(void) {
 
 }
-void render_color_buffer(void) {
-    SDL_UpdateTexture(color_buffer_texture, NULL, color_buffer, (int) (window_width * sizeof(uint32_t)) );
-    SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
-}
-void clear_color_buffer(uint32_t color) {
-    int y, x;
-    for (y = 0; y < window_height; y++) {
-        for (x = 0; x < window_width; x++) {
-            color_buffer[(window_width * y) + x] = color;
-        }
-    }
-}
-void draw_grid(uint32_t color, uint32_t grid_size) {
-    int y, x;
-    for (y = 0; y < window_height; y++) {
-        for (x = 0; x < window_width; x++) {
-            color_buffer[y * window_width + x] = !(x % grid_size && y % grid_size) * color;
-        }
-    }
-}
-void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
-    int y, x;
-    for (y = 0; y < window_height; y++) {
-        for (x = 0; x < window_width; x++) {
-            /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
-            if (x > posx && x < posx+w && y > posy && y < posy+h) {
-                color_buffer[y * window_width + x] = color;
-            }
-            
-        }
-    }
-}
 void render(void) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -112,13 +46,19 @@ void render(void) {
 
     SDL_RenderPresent(renderer);
 }
-void destroy_window(void) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
+
+typedef struct {
+    float x;
+    float y;
+} vec2_t;
+
 int main(int argc, char *argv[]) {
-    
+    vec2_t v1 = {0};
+    vec2_t v2 = {1.0, 3.0};
+
+    printf("%f:%f\n", v1.x, v1.y);
+    printf("%llu", sizeof(v1));
+
     is_running = initialize_window();
     setup();
     while(is_running) {
