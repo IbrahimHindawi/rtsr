@@ -18,14 +18,21 @@ proc initialize_window(): bool =
     echo getError()
     result = false
     quit(-1)
+
+  var displayMode: DisplayMode
+  discard getCurrentDisplayMode(0.int32, displayMode)
+  windowWidth = displayMode.w
+  windowHeight = displayMode.h
   
-  window = createWindow("RTSR", SDL_WINDOWPOS_CENTERED.int32, SDL_WINDOWPOS_CENTERED, 800, 640, SDL_WINDOW_BORDERLESS)  
+  window = createWindow("RTSR", SDL_WINDOWPOS_CENTERED.int32, SDL_WINDOWPOS_CENTERED, windowWidth.int32, windowHeight.int32, SDL_WINDOW_BORDERLESS)  
   if (window == nil):
     echo "Error creating SDL Window!"
 
   renderer = createRenderer(window, -1, 0)
   if renderer == nil:
     echo "Error creating SDL Renderer!"
+
+  discard setFullscreen(window, SDL_WINDOW_FULLSCREEN)
 
   result = true  
 
@@ -60,12 +67,26 @@ proc clearColorBuffer(color:uint32): void =
     for x in 0..<windowWidth:
       colorBuffer[(windowWidth * y) + x] = color
 
+proc drawGrid(color:uint32, gridSize:int) =
+  for y in 0..<windowHeight:
+    for x in 0..<windowWidth:
+      colorBuffer[windowWidth * y + x] = (x mod gridSize == 0 or y mod gridSize == 0).uint32 * color
+
+proc drawRectangle(color:uint32, posx, posy, w, h:int) =
+  for y in 0..<windowHeight:
+    for x in 0..<windowWidth:
+      #colorBuffer[windowWidth * y + x] = (x mod gridSize == 0 or y mod gridSize == 0).uint32 * color
+      if x > posx and x < posx+w and y > posy and y < posy+h:
+        color_buffer[y * window_width + x] = color
+
 proc render(): void =
   setDrawColor(renderer, 0, 0, 0, 255)
   clear(renderer)
 
   renderColorBuffer()
   clearColorBuffer(0x00FFFFFF'u32)
+  drawGrid(0x00FFFFFF'u32, 40)
+  drawRectangle(0x000000FF, 100, 100, 60, 160)
 
   present(renderer)
 
