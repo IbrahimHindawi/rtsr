@@ -46,15 +46,21 @@ void clear_color_buffer(uint32_t color) {
     int y, x;
     for (y = 0; y < window_height; y++) {
         for (x = 0; x < window_width; x++) {
-            color_buffer[(window_width * y) + x] = color;
+            color_buffer[window_width * y + x] = color;
         }
     }
+}
+void draw_pixel(uint32_t color, int posx, int posy) {
+    color_buffer[window_width * posy + posx] = color;
 }
 void draw_grid(uint32_t color, uint32_t grid_size) {
     int y, x;
     for (y = 0; y < window_height; y++) {
         for (x = 0; x < window_width; x++) {
-            color_buffer[y * window_width + x] = !(x % grid_size && y % grid_size) * color;
+            /* color_buffer[y * window_width + x] = !(x % grid_size && y % grid_size) * color; */
+            if ( !(x % grid_size && y % grid_size) ) {
+                draw_pixel(color, x, y);
+            }
         }
     }
 }
@@ -64,9 +70,8 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
         for (x = 0; x < window_width; x++) {
             /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
             if (x > posx && x < posx+w && y > posy && y < posy+h) {
-                color_buffer[y * window_width + x] = color;
+                draw_pixel(color, x, y);
             }
-            
         }
     }
 }
