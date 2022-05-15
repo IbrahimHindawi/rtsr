@@ -16,7 +16,7 @@ bool initialize_window(void) {
     int32_t result =  SDL_Init(SDL_INIT_EVERYTHING);
     if (result == SDL_error) {
         char *error_string = "";
-        printf("%s\n", SDL_GetErrorMsg(error_string, 256));
+        //printf("%s\n", SDL_GetErrorMsg(error_string, 256));
         return false;
     }
     
