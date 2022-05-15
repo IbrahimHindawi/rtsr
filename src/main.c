@@ -19,7 +19,6 @@
 #define point_cloud_scale 100.0f
 vec3_t point_cloud[number_of_points];
 vec2_t prjct_ptcld[number_of_points];
-
 void setup(void) {
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
@@ -77,9 +76,9 @@ void input(void) {
   C.x = Y.x/X.z
  */
 void update(void) {
-    for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
-        prjct_ptcld[ptnum] = new_vec2(point_cloud[ptnum].x, point_cloud[ptnum].y);
-    }
+    //for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
+    //    prjct_ptcld[ptnum] = new_vec2(point_cloud[ptnum].x, point_cloud[ptnum].y);
+    //}
     for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
         float newx = point_cloud[ptnum].x / point_cloud[ptnum].z;
         float newy = point_cloud[ptnum].y / point_cloud[ptnum].z;
