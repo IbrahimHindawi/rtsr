@@ -1,5 +1,6 @@
 #define __USE_MINGW_ANSI_STDIO 1
-
+#define SDL_MAIN_HANDLED
+#include <windows.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,10 +11,12 @@
 #include "display.h"
 #include "vector.h"
 
-bool is_running;
+//extern bool is_running;
 
 #define number_of_points (9 * 9 * 9)
+#define point_cloud_scale 100.0f
 vec3_t point_cloud[number_of_points];
+vec2_t prjct_ptcld[number_of_points];
 
 void setup(void) {
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
@@ -27,11 +30,10 @@ void setup(void) {
     for (x = -1.0f; x < 1.0f; x += 0.25) {
         for (y = -1.0f; y < 1.0f; y += 0.25) {
             for (z = -1.0f; z < 1.0f; z += 0.25) {
-                vec3_t new_vector = new_vec3(x, y, z);
+                vec3_t new_vector = new_vec3(x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
                 point_cloud[point_count++] = new_vector;
             }
         }
-        /* point_count += 1; */
     }
 }
 void input(void) {
@@ -52,22 +54,29 @@ void input(void) {
     }
 }
 void update(void) {
-
+    for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
+        prjct_ptcld[ptnum] = new_vec2(point_cloud[ptnum].x, point_cloud[ptnum].y);
+    }
 }
 void render(void) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     
     render_color_buffer();
-    clear_color_buffer(0x222222FF);
-    draw_grid(0xFF0000FF, 50);
-    draw_rectangle(0x00FF00FF, 100, 100, 60, 160);
-    draw_pixel(0x0000FFFF, 250, 250);
 
+    clear_color_buffer(0x222222FF);
+    draw_grid(0x000000FF, 50);
+    for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
+        draw_rectangle(0x00FF00FF, (int)prjct_ptcld[pointnum].x + 400, (int)prjct_ptcld[pointnum].y + 300, 4, 4);
+    }
     SDL_RenderPresent(renderer);
 }
 
-int main(int argc, char *argv[]) {
+//int main(int argc, char *argv[]) {
+int APIENTRY WinMain( _In_     HINSTANCE hInstance,
+                      _In_opt_ HINSTANCE hPrevInstance,
+                      _In_     LPWSTR    lpCmdLine,
+                      _In_     int       nCmdShow) {
     is_running = initialize_window();
     setup();
     while(is_running) {

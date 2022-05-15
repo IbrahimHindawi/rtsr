@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+extern bool is_running;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern uint32_t* color_buffer;

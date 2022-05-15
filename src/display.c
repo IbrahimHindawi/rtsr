@@ -8,8 +8,8 @@ SDL_Renderer* renderer = NULL;
 
 SDL_Texture* color_buffer_texture = NULL;
 uint32_t* color_buffer = NULL;
-int window_width = 800;
-int window_height = 600;
+int window_width = 0;
+int window_height = 0;
 
 
 bool initialize_window(void) {
@@ -22,8 +22,11 @@ bool initialize_window(void) {
     
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    window_width = display_mode.w;
-    window_height = display_mode.h;
+    //window_width = display_mode.w;
+    //window_height = display_mode.h;
+
+    window_width = 1152;
+    window_height = 720;
 
     window = SDL_CreateWindow( "RTSR", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_BORDERLESS);
     if (!window) {
@@ -35,7 +38,7 @@ bool initialize_window(void) {
         fprintf(stderr, "Error creating SDL Renderer!");
         return false;
     }
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     return true;
 }
 void render_color_buffer(void) {
