@@ -1,4 +1,5 @@
 #include "display.h"
+#include "vector.h"
 
 #define SDL_error -1
 
@@ -11,7 +12,9 @@ uint32_t* color_buffer = NULL;
 int window_width = 0;
 int window_height = 0;
 
-
+/*////////////////////////////////////////////////////////////////// 
+ * Window
+ *//////////////////////////////////////////////////////////////////
 bool initialize_window(void) {
     int32_t result =  SDL_Init(SDL_INIT_EVERYTHING);
     if (result == SDL_error) {
@@ -41,6 +44,14 @@ bool initialize_window(void) {
     //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     return true;
 }
+void destroy_window(void) {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+/*////////////////////////////////////////////////////////////////// 
+ * Render
+ *//////////////////////////////////////////////////////////////////
 void render_color_buffer(void) {
     SDL_UpdateTexture(color_buffer_texture, NULL, color_buffer, (int) (window_width * sizeof(uint32_t)) );
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
@@ -78,8 +89,12 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
         }
     }
 }
-void destroy_window(void) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+/*////////////////////////////////////////////////////////////////// 
+ * Projection
+ *//////////////////////////////////////////////////////////////////
+vec2_t perspective_projection(vec3_t pt, float fov) {
+    float x, y;
+    x = pt.x / pt.z;
+    y = pt.y / pt.z;
+    return new_vec2(x * fov, y * fov);
 }

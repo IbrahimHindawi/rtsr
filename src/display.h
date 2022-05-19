@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "vector.h"
 
 extern bool is_running;
 extern SDL_Window* window;
@@ -15,11 +16,12 @@ extern int window_width;
 extern int window_height;
 
 bool initialize_window(void);
+void destroy_window(void); 
 void render_color_buffer(void);
 void clear_color_buffer(uint32_t color);
 void draw_pixel(uint32_t color, int posx, int posy);
 void draw_grid(uint32_t color, uint32_t grid_size);
 void draw_rectangle(uint32_t color, int posx, int posy, int w, int h);
-void destroy_window(void); 
+vec2_t perspective_projection(vec3_t pt, float fov);
 
 #endif

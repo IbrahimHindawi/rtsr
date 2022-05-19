@@ -33,8 +33,7 @@ void setup(void) {
         for (y = -1.0f; y < 1.0f; y += 0.25) {
             for (z = -1.0f; z < 1.0f; z += 0.25) {
                 point_cloud[point_count++] = new_vec3(x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
-                //printf("{x:%f, y:%f, z:%f}\n", x* point_cloud_scale, y* point_cloud_scale, z* point_cloud_scale);
-                printf("{x:%f, y:%f, z:%f}\n", x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
+                //printf("{x:%f, y:%f, z:%f}\n", x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
             }
         }
     }
@@ -76,17 +75,10 @@ void input(void) {
   C.x = Y.x/X.z
  */
 void update(void) {
-    //for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
-    //    prjct_ptcld[ptnum] = new_vec2(point_cloud[ptnum].x, point_cloud[ptnum].y);
-    //}
     for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
-        float newx = point_cloud[ptnum].x / point_cloud[ptnum].z;
-        float newy = point_cloud[ptnum].y / point_cloud[ptnum].z;
-        //prjct_ptcld[ptnum] = new_vec2(newx, newy);
-        //printf("{x:%f, y:%f, z:%f}\n", point_cloud[ptnum].x, point_cloud[ptnum].y, point_cloud[ptnum].z);
-        printf("PERSP:{x:%f, y:%f}\n", newx, newy);
-        prjct_ptcld[ptnum] = new_vec2(newx * point_cloud_scale, newy * point_cloud_scale);
-        //prjct_ptcld[ptnum] = new_vec2(point_cloud[ptnum].x, point_cloud[ptnum].y);
+        vec3_t pt = point_cloud[ptnum];
+        pt.z -= 500.0f;
+        prjct_ptcld[ptnum] = perspective_projection(pt, 100.0f);
     }
 }
 void render(void) {
