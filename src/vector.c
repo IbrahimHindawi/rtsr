@@ -1,9 +1,34 @@
+#include <math.h>
 #include "vector.h"
-vec2_t new_vec2(float x, float y) {
+vec2_t vec2_new(float x, float y) {
     vec2_t result = {x, y};
     return result;
 }
-vec3_t new_vec3(float x, float y, float z) {
+vec3_t vec3_new(float x, float y, float z) {
     vec3_t result = {x, y, z};
     return result;
+}
+vec3_t vec3_rotate_x(vec3_t v, float angle) {
+	vec3_t rotated_vector = vec3_new(
+		v.x,
+		v.y * cos(angle) - v.z * sin(angle),
+		v.y * sin(angle) + v.z * cos(angle)
+	);
+	return rotated_vector;
+}
+vec3_t vec3_rotate_y(vec3_t v, float angle) {
+	vec3_t rotated_vector = vec3_new(
+		v.x * cos(angle) - v.z * sin(angle),
+		v.y,
+		v.y * sin(angle) + v.z * cos(angle)
+	);
+	return rotated_vector;
+}
+vec3_t vec3_rotate_z(vec3_t v, float angle) {
+	vec3_t rotated_vector = vec3_new(
+		v.x * cos(angle) - v.y * sin(angle),
+		v.x * sin(angle) + v.y * cos(angle),
+		v.z
+	);
+	return rotated_vector;
 }

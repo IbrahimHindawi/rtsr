@@ -1,9 +1,10 @@
 #define WIN64
 #ifdef WIN64
-    #define __USE_MINGW_ANSI_STDIO 1
+    //#define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED
     #include <windows.h>
 #endif
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -18,8 +19,11 @@
 
 #define number_of_points (9 * 9 * 9)
 #define point_cloud_scale 100.0f
+
 vec3_t point_cloud[number_of_points];
 vec2_t prjct_ptcld[number_of_points];
+float scene_angle = 0.0f;
+
 void setup(void) {
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
@@ -33,7 +37,7 @@ void setup(void) {
     for (x = -1.0f; x < 1.0f; x += 0.25) {
         for (y = -1.0f; y < 1.0f; y += 0.25) {
             for (z = -1.0f; z < 1.0f; z += 0.25) {
-                point_cloud[point_count++] = new_vec3(x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
+                point_cloud[point_count++] = vec3_new(x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
                 //printf("{x:%f, y:%f, z:%f}\n", x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
             }
         }
@@ -76,28 +80,33 @@ void input(void) {
   C.x = Y.x/X.z
  */
 void update(void) {
+	scene_angle += 0.1f;
     for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
         vec3_t pt = point_cloud[ptnum];
+		pt = vec3_rotate_x(pt, scene_angle);
+		pt = vec3_rotate_y(pt, scene_angle);
         pt.z -= 500.0f;
         prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
     }
 }
 void render(void) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
+    draw_grid(0x000000FF, 50);
+
+    for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
+        //draw_pixel(0x00FF00FF, prjct_ptcld[pointnum].x, prjct_ptcld[pointnum].y);
+        draw_rectangle(0x00FF00FF, prjct_ptcld[pointnum].x + 400, prjct_ptcld[pointnum].y + 300, 4, 4);
+    }
     
     render_color_buffer();
-
     clear_color_buffer(0x222222FF);
-    draw_grid(0x000000FF, 50);
-    for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
-        draw_rectangle(0x00FF00FF, (int)prjct_ptcld[pointnum].x + 400, (int)prjct_ptcld[pointnum].y + 300, 4, 4);
-    }
     SDL_RenderPresent(renderer);
 }
 
-//int APIENTRY WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
+#ifdef WIN64
+int APIENTRY WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
+#else
 int main(int argc, char *argv[]) {
+#endif
     is_running = initialize_window();
     setup();
     while(is_running) {

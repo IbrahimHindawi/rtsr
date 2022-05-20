@@ -64,8 +64,11 @@ void clear_color_buffer(uint32_t color) {
         }
     }
 }
-void draw_pixel(uint32_t color, int posx, int posy) {
-    color_buffer[window_width * posy + posx] = color;
+void draw_pixel(uint32_t color, int x, int y) {
+    if (x >= 0 && x < window_width && y >= 0 && y < window_height) {
+        color_buffer[(window_width * y) + x] = color;
+    }
+    //color_buffer[window_width * posy + posx] = color;
 }
 void draw_grid(uint32_t color, uint32_t grid_size) {
     int y, x;
@@ -79,15 +82,22 @@ void draw_grid(uint32_t color, uint32_t grid_size) {
     }
 }
 void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
-    int y, x;
-    for (y = 0; y < window_height; y++) {
-        for (x = 0; x < window_width; x++) {
-            /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
-            if (x > posx && x < posx+w && y > posy && y < posy+h) {
-                draw_pixel(color, x, y);
-            }
+    for (int i = 0; i < w; i++) {
+        for (int j = 0; j < h; j++) {
+            int cur_x = posx + i;
+            int cur_y = posy + j;
+            draw_pixel(color, cur_x, cur_y);
         }
     }
+    //int y, x;
+    //for (y = 0; y < window_height; y++) {
+    //    for (x = 0; x < window_width; x++) {
+    //        /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
+    //        if (x > posx && x < posx+w && y > posy && y < posy+h) {
+    //            draw_pixel(color, x, y);
+    //        }
+    //    }
+    //}
 }
 /*////////////////////////////////////////////////////////////////// 
  * Projection
@@ -96,5 +106,5 @@ vec2_t perspective_projection(vec3_t pt, float fov) {
     float x, y;
     x = pt.x / pt.z;
     y = pt.y / pt.z;
-    return new_vec2(x * fov, y * fov);
+    return vec2_new(x * fov, y * fov);
 }
