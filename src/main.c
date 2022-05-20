@@ -1,3 +1,4 @@
+#define WIN64
 #ifdef WIN64
     #define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED

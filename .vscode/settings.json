@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.html": "html",
-        "*.glsl": "glsl",
-        "*.asm": "masm",
-        "*.h": "cpp",
-        "cstdint": "cpp"
-    }
-}
