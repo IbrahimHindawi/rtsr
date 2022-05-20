@@ -26,7 +26,7 @@ void setup(void) {
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
-    printf("GENERATE POINT CLOUD\n");
+    //printf("GENERATE POINT CLOUD\n");
     float x, y, z;
     int point_count = 0;
     for (x = -1.0f; x < 1.0f; x += 0.25) {
@@ -37,7 +37,7 @@ void setup(void) {
             }
         }
     }
-    printf("GENERATE POINT CLOUD END\n");
+    //printf("GENERATE POINT CLOUD END\n");
 }
 void input(void) {
     SDL_Event event;
@@ -78,7 +78,7 @@ void update(void) {
     for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
         vec3_t pt = point_cloud[ptnum];
         pt.z -= 500.0f;
-        prjct_ptcld[ptnum] = perspective_projection(pt, 100.0f);
+        prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
     }
 }
 void render(void) {
