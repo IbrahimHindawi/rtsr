@@ -85,6 +85,7 @@ void update(void) {
         vec3_t pt = point_cloud[ptnum];
 		pt = vec3_rotate_x(pt, scene_angle);
 		pt = vec3_rotate_y(pt, scene_angle);
+		pt = vec3_rotate_z(pt, scene_angle);
         pt.z -= 500.0f;
         prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
     }
