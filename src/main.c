@@ -1,4 +1,4 @@
-#define WIN64
+//#define WIN64
 #ifdef WIN64
     //#define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED
@@ -16,9 +16,13 @@
 #include "vector.h"
 
 //extern bool is_running;
+#define FPS 30
+#define frame_target_time (1000/FPS)
 
 #define number_of_points (9 * 9 * 9)
 #define point_cloud_scale 100.0f
+
+int previous_frame_time = 0;
 
 vec3_t point_cloud[number_of_points];
 vec2_t prjct_ptcld[number_of_points];
@@ -111,6 +115,11 @@ int main(int argc, char *argv[]) {
     is_running = initialize_window();
     setup();
     while(is_running) {
+        previous_frame_time = SDL_GetTicks();
+        int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
+        if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
+            SDL_Delay(time_to_wait);
+        }
         input();
         update();
         render();
