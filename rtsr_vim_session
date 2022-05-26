@@ -18,12 +18,15 @@ vmap <S-Insert> "-d"*P
 nmap <S-Insert> "*P
 let &cpo=s:cpo_save
 unlet s:cpo_save
+set autoindent
 set background=dark
-set guifont=Lucida_Console:h18:cANSI:qDRAFT
+set guifont=Lucida_Console:h10:cANSI:qDRAFT
 set guioptions=egt
 set helplang=En
+set shiftwidth=4
+set smartindent
 set tabstop=4
-set window=40
+set window=72
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -52,7 +55,7 @@ set winwidth=1
 argglobal
 setlocal keymap=
 setlocal noarabic
-setlocal noautoindent
+setlocal autoindent
 setlocal backupcopy=
 setlocal balloonexpr=
 setlocal nobinary
@@ -137,12 +140,12 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
 setlocal signcolumn=auto
-setlocal nosmartindent
+setlocal smartindent
 setlocal softtabstop=0
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
@@ -175,12 +178,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 100 - ((21 * winheight(0) + 20) / 40)
+let s:l = 90 - ((24 * winheight(0) + 36) / 72)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-100
-normal! 026|
+90
+normal! 05|
 tabnext
 edit src\vector.h
 set splitbelow splitright
@@ -195,12 +198,12 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 90 + 91) / 182)
-exe 'vert 2resize ' . ((&columns * 91 + 91) / 182)
+exe 'vert 1resize ' . ((&columns * 111 + 160) / 320)
+exe 'vert 2resize ' . ((&columns * 208 + 160) / 320)
 argglobal
 setlocal keymap=
 setlocal noarabic
-setlocal noautoindent
+setlocal autoindent
 setlocal backupcopy=
 setlocal balloonexpr=
 setlocal nobinary
@@ -285,12 +288,12 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
 setlocal signcolumn=auto
-setlocal nosmartindent
+setlocal smartindent
 setlocal softtabstop=0
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
@@ -323,7 +326,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 14 - ((13 * winheight(0) + 19) / 39)
+let s:l = 14 - ((13 * winheight(0) + 35) / 71)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -457,15 +460,15 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 34 - ((33 * winheight(0) + 19) / 39)
+let s:l = 34 - ((33 * winheight(0) + 35) / 71)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 34
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 90 + 91) / 182)
-exe 'vert 2resize ' . ((&columns * 91 + 91) / 182)
+exe 'vert 1resize ' . ((&columns * 111 + 160) / 320)
+exe 'vert 2resize ' . ((&columns * 208 + 160) / 320)
 tabnext
 edit src\display.h
 set splitbelow splitright
@@ -480,12 +483,12 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 90 + 91) / 182)
-exe 'vert 2resize ' . ((&columns * 91 + 91) / 182)
+exe 'vert 1resize ' . ((&columns * 39 + 160) / 320)
+exe 'vert 2resize ' . ((&columns * 280 + 160) / 320)
 argglobal
 setlocal keymap=
 setlocal noarabic
-setlocal noautoindent
+setlocal autoindent
 setlocal backupcopy=
 setlocal balloonexpr=
 setlocal nobinary
@@ -570,12 +573,12 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
 setlocal signcolumn=auto
-setlocal nosmartindent
+setlocal smartindent
 setlocal softtabstop=0
 setlocal nospell
 setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
@@ -608,7 +611,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 24 - ((23 * winheight(0) + 19) / 39)
+let s:l = 24 - ((23 * winheight(0) + 35) / 71)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -742,23 +745,24 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 19) / 39)
+let s:l = 1 - ((0 * winheight(0) + 35) / 71)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 90 + 91) / 182)
-exe 'vert 2resize ' . ((&columns * 91 + 91) / 182)
-tabnext 1
+exe 'vert 1resize ' . ((&columns * 39 + 160) / 320)
+exe 'vert 2resize ' . ((&columns * 280 + 160) / 320)
+tabnext 3
 set stal=1
 badd +0 src\main.c
-badd +0 vector.h
 badd +13 src\vector.h
-badd +0 src\vector.c
 badd +1 src\display.h
-badd +0 src\display.c
+badd +1 src\vector.c
+badd +1 src\display.c
+badd +1 vector.h
+badd +2 ~\.vimrc
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif
@@ -770,6 +774,7 @@ if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &so = s:so_save | let &siso = s:siso_save
+nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :

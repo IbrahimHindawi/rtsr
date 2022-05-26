@@ -14,18 +14,14 @@
 #include "defines.h"
 #include "display.h"
 #include "vector.h"
+#include "mesh.h"
 
 //extern bool is_running;
 #define FPS 30
 #define frame_target_time (1000/FPS)
 
-#define number_of_points (9 * 9 * 9)
-#define point_cloud_scale 100.0f
-
 int previous_frame_time = 0;
 
-vec3_t point_cloud[number_of_points];
-vec2_t prjct_ptcld[number_of_points];
 
 float scene_angle = 0.0f;
 vec3_t camera_position;
@@ -37,19 +33,6 @@ void setup(void) {
         printf("Unable to allocate memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
-
-    //printf("GENERATE POINT CLOUD\n");
-    float x, y, z;
-    int point_count = 0;
-    for (x = -1.0f; x < 1.0f; x += 0.25) {
-        for (y = -1.0f; y < 1.0f; y += 0.25) {
-            for (z = -1.0f; z < 1.0f; z += 0.25) {
-                point_cloud[point_count++] = vec3_new(x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
-                //printf("{x:%f, y:%f, z:%f}\n", x * point_cloud_scale, y * point_cloud_scale, z * point_cloud_scale);
-            }
-        }
-    }
-    //printf("GENERATE POINT CLOUD END\n");
 }
 void input(void) {
     SDL_Event event;
@@ -87,7 +70,13 @@ void input(void) {
   C.x = Y.x/X.z
  */
 void update(void) {
+    previous_frame_time = SDL_GetTicks();
+    int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
+    if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
+        SDL_Delay(time_to_wait);
+    }
 	scene_angle += 0.1f;
+/*
     for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
         vec3_t pt = point_cloud[ptnum];
 		pt = vec3_rotate_x(pt, scene_angle);
@@ -96,17 +85,18 @@ void update(void) {
         pt.z += camera_position.z;
         prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
     }
+*/
 }
 void render(void) {
-    draw_grid(0x000000FF, 50);
+    //draw_grid(0x101010FF, 50);
 
+/*
     for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
-        //draw_pixel(0x00FF00FF, prjct_ptcld[pointnum].x, prjct_ptcld[pointnum].y);
         draw_rectangle(0x00FF00FF, prjct_ptcld[pointnum].x + (window_width * 0.5), prjct_ptcld[pointnum].y + (window_height * 0.5), 4, 4);
     }
-    
+*/    
     render_color_buffer();
-    clear_color_buffer(0x222222FF);
+    clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
 }
 
@@ -118,11 +108,6 @@ int main(int argc, char *argv[]) {
     is_running = initialize_window();
     setup();
     while(is_running) {
-        previous_frame_time = SDL_GetTicks();
-        int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
-        if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
-            SDL_Delay(time_to_wait);
-        }
         input();
         update();
         render();
