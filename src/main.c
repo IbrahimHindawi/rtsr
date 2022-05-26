@@ -26,9 +26,12 @@ int previous_frame_time = 0;
 
 vec3_t point_cloud[number_of_points];
 vec2_t prjct_ptcld[number_of_points];
+
 float scene_angle = 0.0f;
+vec3_t camera_position;
 
 void setup(void) {
+    camera_position = vec3_new(0.0f, 0.0f, -500.0f);
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
         printf("Unable to allocate memory.");
@@ -90,7 +93,7 @@ void update(void) {
 		pt = vec3_rotate_x(pt, scene_angle);
 		pt = vec3_rotate_y(pt, scene_angle);
 		pt = vec3_rotate_z(pt, scene_angle);
-        pt.z -= 500.0f;
+        pt.z += camera_position.z;
         prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
     }
 }
@@ -99,7 +102,7 @@ void render(void) {
 
     for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
         //draw_pixel(0x00FF00FF, prjct_ptcld[pointnum].x, prjct_ptcld[pointnum].y);
-        draw_rectangle(0x00FF00FF, prjct_ptcld[pointnum].x + 400, prjct_ptcld[pointnum].y + 300, 4, 4);
+        draw_rectangle(0x00FF00FF, prjct_ptcld[pointnum].x + (window_width * 0.5), prjct_ptcld[pointnum].y + (window_height * 0.5), 4, 4);
     }
     
     render_color_buffer();
