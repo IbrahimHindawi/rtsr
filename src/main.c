@@ -1,5 +1,5 @@
 //#define WIN64
-#ifdef WIN64
+#ifdef _MSC_VER
     //#define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED
     #include <windows.h>
@@ -107,7 +107,7 @@ void render(void) {
     SDL_RenderPresent(renderer);
 }
 
-#ifdef WIN64
+#ifdef _MSC_VER
 int APIENTRY WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 #else
 int main(int argc, char *argv[]) {
