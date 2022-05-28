@@ -18,7 +18,7 @@ int window_height = 0;
 bool initialize_window(void) {
     int32_t result =  SDL_Init(SDL_INIT_EVERYTHING);
     if (result == SDL_error) {
-        char *error_string = "";
+        //char *error_string = "";
         //printf("%s\n", SDL_GetErrorMsg(error_string, 256));
         return false;
     }
@@ -114,7 +114,7 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
  *//////////////////////////////////////////////////////////////////
 vec2_t perspective_projection(vec3_t pt, float fov) {
     float x, y;
-    x = pt.x / pt.z;
-    y = pt.y / pt.z;
-    return vec2_new(x * fov, y * fov);
+    x = (pt.x * fov) / pt.z;
+    y = (pt.y * fov) / pt.z;
+    return vec2_new(x, y);
 }

@@ -4,10 +4,12 @@
 #include "vector.h"
 #include "triangle.h"
 
-#define npts 8
-extern vec3_t verts[npts];
+#define numpts 8
+extern vec3_t verts[numpts];
 
-#define nprim (6*2)
-extern face_t prims[nprim];
+#define numprims (6*2)
+extern face_t prims[numprims];
+
+#define numverts (numprims * 3)
 
 #endif
