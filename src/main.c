@@ -30,7 +30,7 @@ float scene_angle = 0.0f;
 vec3_t camera_position;
 
 void setup(void) {
-    camera_position = vec3_new(0.0f, 0.0f, -1.0f);
+    camera_position = vec3_new(0.0f, 0.0f, -5.0f);
     color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
         printf("Unable to allocate memory.");
@@ -92,52 +92,28 @@ void update(void) {
     //int vtcount = 0;
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = prims[primnum];
-        render_points[primnum + (primnum * 0)] = verts[prim.a - 1];
-        render_points[primnum + (primnum * 1)] = verts[prim.b - 1];
-        render_points[primnum + (primnum * 2)] = verts[prim.c - 1];
-        printf("vtnum: %d\n", primnum);
-        printf("index: %d, vector{%f, %f, %f}\n", prim.a-1, verts[prim.a - 1].x, verts[prim.a - 1].y, verts[prim.a - 1].z);
-        printf("index: %d, vector{%f, %f, %f}\n", prim.b-1, verts[prim.b - 1].x, verts[prim.b - 1].y, verts[prim.b - 1].z);
-        printf("index: %d, vector{%f, %f, %f}\n", prim.c-1, verts[prim.c - 1].x, verts[prim.c - 1].y, verts[prim.c - 1].z);
-        //vec3_t a_vert = verts[prim.a - 1];
-        //a_vert = vec3_scalar_multiply(a_vert, 50);
-        //projected_points[vtcount] = perspective_projection(a_vert, FOV);
-        //printf("vector{%f, %f}\n", projected_points[vtcount].x, projected_points[vtcount].y);
-        //printf("vector{%f, %f, %f}\n", a_vert.x, a_vert.y, a_vert.z);
-		//a_vert = vec3_rotate_x(a_vert, scene_angle);
-        //projected_points[vtcount] = vec2_new(a_vert.x, a_vert.y);
-
-        //vec3_t b_vert = verts[prim.b - 1];
-        //b_vert = vec3_scalar_multiply(b_vert, 50);
-        //projected_points[vtcount] = perspective_projection(b_vert, FOV);
-        //printf("vector{%f, %f}\n", projected_points[vtcount].x, projected_points[vtcount].y);
-        //printf("vector{%f, %f, %f}\n", b_vert.x, b_vert.y, b_vert.z);
-		//b_vert = vec3_rotate_y(b_vert, scene_angle);
-        //projected_points[vtcount] = vec2_new(b_vert.x, b_vert.y);
-
-        //vec3_t c_vert = verts[prim.c - 1];
-        //c_vert = vec3_scalar_multiply(c_vert, 50);
-		//c_vert = vec3_rotate_z(c_vert, scene_angle);
-        //projected_points[vtcount] = vec2_new(c_vert.x, c_vert.y);
-        //printf("vector{%f, %f, %f}\n", c_vert.x, c_vert.y, c_vert.z);
-        //projected_points[vtcount] = perspective_projection(c_vert, FOV);
-        //printf("vector{%f, %f}\n", projected_points[vtcount].x, projected_points[vtcount].y);
-        
-        //vtcount += 3;
-        //printf("%d\n", vtcount);
+        render_points[0 + (primnum * 3)] = verts[prim.a - 1];
+        render_points[1 + (primnum * 3)] = verts[prim.b - 1];
+        render_points[2 + (primnum * 3)] = verts[prim.c - 1];
+        //printf("vtnum: %d\n", primnum);
+        //printf("index: %d, vector{%f, %f, %f}\n", prim.a-1, verts[prim.a - 1].x, verts[prim.a - 1].y, verts[prim.a - 1].z);
+        //printf("index: %d, vector{%f, %f, %f}\n", prim.b-1, verts[prim.b - 1].x, verts[prim.b - 1].y, verts[prim.b - 1].z);
+        //printf("index: %d, vector{%f, %f, %f}\n", prim.c-1, verts[prim.c - 1].x, verts[prim.c - 1].y, verts[prim.c - 1].z);
     }
     for (int i = 0; i < numverts; i++) {
         //points[i] = vec3_scalar_multiply(points[i], 50.0f);
         //printf("point: %d", i);
-        //printf(" vector{%f, %f, %f}\n", render_points[i].x, render_points[i].y, render_points[i].z);
 		render_points[i] = vec3_rotate_x(render_points[i], scene_angle);
 		render_points[i] = vec3_rotate_y(render_points[i], scene_angle);
 		render_points[i] = vec3_rotate_z(render_points[i], scene_angle);
-		//render_points[i].z += camera_position.z;
-        render_points[i].z -= 10.0f;
+		render_points[i].z += camera_position.z;
         projected_points[i] = perspective_projection(render_points[i], 100.0f);
-        printf("point: %d", i);
-        printf(" vector{%f, %f}\n", projected_points[i].x, projected_points[i].y);
+        //projected_points[i] = vec2_new(render_points[i].x * 50.0f, render_points[i].y * 50.0f);
+        //printf("i: %d, vec3{%f, %f, %f}\n\n", i, render_points[i].x, render_points[i].y, render_points[i].z);
+        //printf("point: %d\n", i);
+        //printf("|_vec2{%f, %f}\n", projected_points[i].x, projected_points[i].y);
+        printf("|_vec2{%f, %f}\n", render_points[i].x, render_points[i].y);
+        printf("|_vec3{%f, %f, %f}\n\n", render_points[i].x, render_points[i].y, render_points[i].z);
     }
 }
 void render(void) {
