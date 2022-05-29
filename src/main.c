@@ -79,22 +79,12 @@ void update(void) {
         SDL_Delay(time_to_wait);
     }
 	scene_angle += 0.1f;
-/*
-    for (int ptnum = 0; ptnum < number_of_points; ptnum++) {
-        vec3_t pt = point_cloud[ptnum];
-		pt = vec3_rotate_x(pt, scene_angle);
-		pt = vec3_rotate_y(pt, scene_angle);
-		pt = vec3_rotate_z(pt, scene_angle);
-        pt.z += camera_position.z;
-        prjct_ptcld[ptnum] = perspective_projection(pt, 1000.0f);
-    }
-*/
-    //int vtcount = 0;
+
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = prims[primnum];
-        render_points[0 + (primnum * 3)] = verts[prim.a - 1];
-        render_points[1 + (primnum * 3)] = verts[prim.b - 1];
-        render_points[2 + (primnum * 3)] = verts[prim.c - 1];
+        render_points[0 + primnum * 3] = verts[prim.a - 1];
+        render_points[1 + primnum * 3] = verts[prim.b - 1];
+        render_points[2 + primnum * 3] = verts[prim.c - 1];
         //printf("vtnum: %d\n", primnum);
         //printf("index: %d, vector{%f, %f, %f}\n", prim.a-1, verts[prim.a - 1].x, verts[prim.a - 1].y, verts[prim.a - 1].z);
         //printf("index: %d, vector{%f, %f, %f}\n", prim.b-1, verts[prim.b - 1].x, verts[prim.b - 1].y, verts[prim.b - 1].z);
@@ -118,14 +108,7 @@ void update(void) {
 }
 void render(void) {
     draw_grid(0x101010FF, 50);
-
-/*
-    for (int pointnum = 0; pointnum < number_of_points; pointnum++) {
-        draw_rectangle(0x00FF00FF, prjct_ptcld[pointnum].x + (window_width * 0.5), prjct_ptcld[pointnum].y + (window_height * 0.5), 4, 4);
-    }
-*/    
     for (int vtcount = 0; vtcount < numverts; vtcount++) {
-        //printf("projected_vector2{%f, %f}\n", projected_points[vtcount].x, projected_points[vtcount].y);
         draw_rectangle(0x00FF00FF, projected_points[vtcount].x + (window_width * 0.5), projected_points[vtcount].y + (window_height * 0.5), 2, 2);
     }
     render_color_buffer();
