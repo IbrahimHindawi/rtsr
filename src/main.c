@@ -54,24 +54,6 @@ void input(void) {
         break;
     }
 }
-/*
-  similar triangles have the same ratios when we divide their sides
-  Y
-  |.
-  |   .
-  |      .  C
-  |         .
-  |         |   .
-  |         |      .
-  |         |         .
-  -----------------------.
-  X         B            A
-
-  BC/XY = AB/AX
-  if AB = 1 then BC = XY/AX
-  else BC = (1/XY) * (AB/AX) then BC = (1*AB) / (XY/AX)
-  C.x = Y.x/X.z
- */
 void update(void) {
     previous_frame_time = SDL_GetTicks();
     int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
@@ -102,8 +84,8 @@ void update(void) {
         //printf("i: %d, vec3{%f, %f, %f}\n\n", i, render_points[i].x, render_points[i].y, render_points[i].z);
         //printf("point: %d\n", i);
         //printf("|_vec2{%f, %f}\n", projected_points[i].x, projected_points[i].y);
-        printf("|_vec2{%f, %f}\n", render_points[i].x, render_points[i].y);
-        printf("|_vec3{%f, %f, %f}\n\n", render_points[i].x, render_points[i].y, render_points[i].z);
+        //printf("|_vec2{%f, %f}\n", render_points[i].x, render_points[i].y);
+        //printf("|_vec3{%f, %f, %f}\n\n", render_points[i].x, render_points[i].y, render_points[i].z);
     }
 }
 void render(void) {
