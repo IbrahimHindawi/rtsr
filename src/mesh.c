@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-vec3_t verts[numpts] = {
+vec3_t points[numpts] = {
 	{-1.0f, -1.0f, -1.0f}, //1
 	{-1.0f,  1.0f, -1.0f}, //2
 	{ 1.0f,  1.0f, -1.0f}, //3

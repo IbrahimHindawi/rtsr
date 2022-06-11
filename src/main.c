@@ -1,4 +1,3 @@
-//#define WIN64
 #ifdef _MSC_VER
     //#define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED
@@ -16,22 +15,21 @@
 #include "vector.h"
 #include "mesh.h"
 
-//extern bool is_running;
 #define FPS 30
 #define frame_target_time (1000/FPS)
-#define FOV 10.0f
+#define FOV 100.0f
 
 int previous_frame_time = 0;
 
-vec3_t render_points[numverts];
-vec2_t projected_points[numverts];
+vec3_t render_verts[numverts] = {0};
+vec2_t prjctd_verts[numverts] = {0};
 
 float scene_angle = 0.0f;
-vec3_t camera_position;
+vec3_t camera_position = {0};
 
 void setup(void) {
     camera_position = vec3_new(0.0f, 0.0f, -5.0f);
-    color_buffer = (uint32_t*) malloc( sizeof(uint32_t) * window_width * window_height);
+    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
         printf("Unable to allocate memory.");
     }
@@ -60,38 +58,38 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-	scene_angle += 0.1f;
+    scene_angle += 0.1f;
 
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = prims[primnum];
-        render_points[0 + primnum * 3] = verts[prim.a - 1];
-        render_points[1 + primnum * 3] = verts[prim.b - 1];
-        render_points[2 + primnum * 3] = verts[prim.c - 1];
+        render_verts[primnum * 3 + 0] = points[prim.a - 1];
+        render_verts[primnum * 3 + 1] = points[prim.b - 1];
+        render_verts[primnum * 3 + 2] = points[prim.c - 1];
         //printf("vtnum: %d\n", primnum);
         //printf("index: %d, vector{%f, %f, %f}\n", prim.a-1, verts[prim.a - 1].x, verts[prim.a - 1].y, verts[prim.a - 1].z);
         //printf("index: %d, vector{%f, %f, %f}\n", prim.b-1, verts[prim.b - 1].x, verts[prim.b - 1].y, verts[prim.b - 1].z);
         //printf("index: %d, vector{%f, %f, %f}\n", prim.c-1, verts[prim.c - 1].x, verts[prim.c - 1].y, verts[prim.c - 1].z);
     }
-    for (int i = 0; i < numverts; i++) {
+    for (int vertnum = 0; vertnum < numverts; vertnum++) {
         //points[i] = vec3_scalar_multiply(points[i], 50.0f);
         //printf("point: %d", i);
-		render_points[i] = vec3_rotate_x(render_points[i], scene_angle);
-		render_points[i] = vec3_rotate_y(render_points[i], scene_angle);
-		render_points[i] = vec3_rotate_z(render_points[i], scene_angle);
-		render_points[i].z += camera_position.z;
-        projected_points[i] = perspective_projection(render_points[i], 100.0f);
-        //projected_points[i] = vec2_new(render_points[i].x * 50.0f, render_points[i].y * 50.0f);
-        //printf("i: %d, vec3{%f, %f, %f}\n\n", i, render_points[i].x, render_points[i].y, render_points[i].z);
+        render_verts[vertnum] = vec3_rotate_x(render_verts[vertnum], scene_angle);
+        render_verts[vertnum] = vec3_rotate_y(render_verts[vertnum], scene_angle);
+        render_verts[vertnum] = vec3_rotate_z(render_verts[vertnum], scene_angle);
+        render_verts[vertnum].z += camera_position.z;
+        prjctd_verts[vertnum] = perspective_projection(render_verts[vertnum], FOV);
+        //prjctd_verts[i] = vec2_new(render_verts[i].x * 50.0f, render_verts[i].y * 50.0f);
+        //printf("i: %d, vec3{%f, %f, %f}\n\n", i, render_verts[i].x, render_verts[i].y, render_verts[i].z);
         //printf("point: %d\n", i);
-        //printf("|_vec2{%f, %f}\n", projected_points[i].x, projected_points[i].y);
-        //printf("|_vec2{%f, %f}\n", render_points[i].x, render_points[i].y);
-        //printf("|_vec3{%f, %f, %f}\n\n", render_points[i].x, render_points[i].y, render_points[i].z);
+        //printf("|_vec2{%f, %f}\n", prjctd_verts[i].x, prjctd_verts[i].y);
+        //printf("|_vec2{%f, %f}\n", render_verts[i].x, render_verts[i].y);
+        //printf("|_vec3{%f, %f, %f}\n\n", render_verts[i].x, render_verts[i].y, render_verts[i].z);
     }
 }
 void render(void) {
     draw_grid(0x101010FF, 50);
-    for (int vtcount = 0; vtcount < numverts; vtcount++) {
-        draw_rectangle(0x00FF00FF, projected_points[vtcount].x + (window_width * 0.5), projected_points[vtcount].y + (window_height * 0.5), 2, 2);
+    for (int vertnum = 0; vertnum < numverts; vertnum++) {
+        draw_rectangle(0x00FF00FF, prjctd_verts[vertnum].x + (window_width * 0.5), prjctd_verts[vertnum].y + (window_height * 0.5), 2, 2);
     }
     render_color_buffer();
     clear_color_buffer(0x000000FF);
