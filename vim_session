@@ -37,6 +37,7 @@ set helplang=en
 set mouse=a
 set printexpr=system('open\ -a\ Preview\ '.v:fname_in)\ +\ v:shell_error
 set runtimepath=~/.vim,~/.vim/autoload/nim.vim,~/.vim/autoload/emet-vim,~/.vim/autoload/meh,~/.vim/autoload/vim-sunbather,/Applications/MacVim.app/Contents/Resources/vim/vimfiles,/Applications/MacVim.app/Contents/Resources/vim/runtime,/Applications/MacVim.app/Contents/Resources/vim/vimfiles/after,~/.vim/after
+set shiftwidth=4
 set tabstop=4
 set termencoding=utf-8
 set window=60
@@ -205,12 +206,12 @@ setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 25 - ((24 * winheight(0) + 29) / 58)
+let s:l = 26 - ((25 * winheight(0) + 29) / 58)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 25
-normal! 050|
+keepjumps 26
+normal! 067|
 wincmd w
 argglobal
 if bufexists("src/display.c") | buffer src/display.c | else | edit src/display.c | endif
@@ -303,7 +304,7 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
@@ -344,13 +345,14 @@ setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 107 - ((46 * winheight(0) + 29) / 58)
+let s:l = 108 - ((33 * winheight(0) + 29) / 58)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 107
-normal! 013|
+keepjumps 108
+normal! 035|
 wincmd w
+2wincmd w
 exe 'vert 1resize ' . ((&columns * 91 + 91) / 182)
 exe 'vert 2resize ' . ((&columns * 90 + 91) / 182)
 tabnext
@@ -447,7 +449,7 @@ setlocal norightleft
 setlocal rightleftcmd=search
 setlocal noscrollbind
 setlocal scrolloff=-1
-setlocal shiftwidth=8
+setlocal shiftwidth=4
 setlocal noshortname
 setlocal showbreak=
 setlocal sidescrolloff=-1
@@ -488,12 +490,12 @@ setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 67 - ((35 * winheight(0) + 29) / 59)
+let s:l = 101 - ((44 * winheight(0) + 29) / 59)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 67
-normal! 059|
+keepjumps 101
+normal! 05|
 tabnext
 edit src/mesh.h
 let s:save_splitbelow = &splitbelow
@@ -944,12 +946,12 @@ setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 29) / 58)
+let s:l = 12 - ((11 * winheight(0) + 29) / 58)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 019|
+keepjumps 12
+normal! 012|
 wincmd w
 argglobal
 if bufexists("src/triangle.c") | buffer src/triangle.c | else | edit src/triangle.c | endif
@@ -1092,7 +1094,7 @@ normal! 0
 wincmd w
 exe 'vert 1resize ' . ((&columns * 90 + 91) / 182)
 exe 'vert 2resize ' . ((&columns * 91 + 91) / 182)
-tabnext 2
+tabnext 1
 set stal=1
 badd +1 main.c
 badd +0 src/main.c
@@ -1105,6 +1107,8 @@ badd +120 src/display.c
 badd +18 src/vector.h
 badd +40 src/vector.c
 badd +25 src/display.h
+badd +44 ~/.vim/colors/FieryMist.vim
+badd +5 ~/.vimrc
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0
   silent exe 'bwipe ' . s:wipebuf
 endif

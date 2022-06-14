@@ -88,6 +88,25 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
 		}
 	}
 }
+void draw_line(uint32_t color, int x0, int y0, int x1, int y1) {
+    int delta_x = (x1 - x0);
+    int delta_y = (y1 - y0);
+    int longest = (abs(delta_x) >= abs(delta_y)) ? abs(delta_x) : abs(delta_y);
+    float x_inc = delta_x / (float)longest;
+    float y_inc = delta_y / (float)longest;
+    float cur_x = x0;
+    float cur_y = y0;
+    for(int step = 0; step <= longest; step++) {
+        draw_pixel(color, round(cur_x), round(cur_y));
+        cur_x += x_inc;
+        cur_y += y_inc;
+    }
+}
+void draw_triangle(uint32_t color, int x0, int y0, int x1, int y1, int x2, int y2) {
+    draw_line(color, x0, y0, x1, y1);
+    draw_line(color, x1, y1, x2, y2);
+    draw_line(color, x2, y2, x0, y0);
+}
 /*////////////////////////////////////////////////////////////////// 
  * Projection
  *//////////////////////////////////////////////////////////////////
