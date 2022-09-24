@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-#define WIN64
-#ifdef WIN64
-=======
 #ifdef _MSC_VER
->>>>>>> b4a9dd8a852e2e1835f3eaf2811e454e5815a36b
     //#define __USE_MINGW_ANSI_STDIO 1
     #define SDL_MAIN_HANDLED
     #include <windows.h>
