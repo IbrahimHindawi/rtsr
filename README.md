@@ -1,5 +1,5 @@
-# rtsr  
-Real-Time Software Rendering  
+# RTSR
+## Real-Time Software Rendering  
 
 Windows:  
 -`bbuild.bat`  
