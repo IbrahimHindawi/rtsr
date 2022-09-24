@@ -7,3 +7,4 @@ bin/*
 *.swo
 win/.vs
 win/x64
+build
