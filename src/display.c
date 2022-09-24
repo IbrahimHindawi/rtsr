@@ -18,7 +18,7 @@ int window_height = 0;
 bool initialize_window(void) {
     int32_t result =  SDL_Init(SDL_INIT_EVERYTHING);
     if (result == SDL_error) {
-        char *error_string = "";
+        //char *error_string = "";
         //printf("%s\n", SDL_GetErrorMsg(error_string, 256));
         return false;
     }
@@ -73,7 +73,6 @@ void draw_grid(uint32_t color, uint32_t grid_size) {
     int y, x;
     for (y = 0; y < window_height; y++) {
         for (x = 0; x < window_width; x++) {
-            /* color_buffer[y * window_width + x] = !(x % grid_size && y % grid_size) * color; */
             if ( !(x % grid_size && y % grid_size) ) {
                 draw_pixel(color, x, y);
             }
@@ -81,26 +80,6 @@ void draw_grid(uint32_t color, uint32_t grid_size) {
     }
 }
 void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
-//impl0//////////////////////////	
-    //for (int i = 0; i < w; i++) {
-    //    for (int j = 0; j < h; j++) {
-    //        int cur_x = posx + i;
-    //        int cur_y = posy + j;
-    //        draw_pixel(color, cur_x, cur_y);
-    //    }
-    //}
-//impl1//////////////////////////	
-	//int y = posy;
-	//int x = posx;
-    //for (y = 0; y < h; y++) {
-    //    for (x = 0; x < w; x++) {
-    //        /* color_buffer[y * window_width + x] = !(x > posx && x < posx+w && y > posy && y < posy+h) * color; */
-    //        //if (x > posx && x < posx+w && y > posy && y < posy+h) {
-    //            draw_pixel(color, x, y);
-    //        //}
-    //    }
-    //}
-//impl2//////////////////////////	
 	for(int x = posx; x < w + posx; x++) {
 		for(int y = posy; y < h + posy; y++) {
 			if ( x >= 0 && x < window_width && y >= 0 && y < window_height) {
@@ -109,12 +88,50 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
 		}
 	}
 }
+void draw_line(uint32_t color, int x0, int y0, int x1, int y1) {
+    int delta_x = (x1 - x0);
+    int delta_y = (y1 - y0);
+    int longest = (abs(delta_x) >= abs(delta_y)) ? abs(delta_x) : abs(delta_y);
+    float x_inc = delta_x / (float)longest;
+    float y_inc = delta_y / (float)longest;
+    float cur_x = x0;
+    float cur_y = y0;
+    for(int step = 0; step <= longest; step++) {
+        draw_pixel(color, round(cur_x), round(cur_y));
+        cur_x += x_inc;
+        cur_y += y_inc;
+    }
+}
+void draw_triangle(uint32_t color, int x0, int y0, int x1, int y1, int x2, int y2) {
+    draw_line(color, x0, y0, x1, y1);
+    draw_line(color, x1, y1, x2, y2);
+    draw_line(color, x2, y2, x0, y0);
+}
 /*////////////////////////////////////////////////////////////////// 
  * Projection
  *//////////////////////////////////////////////////////////////////
+/*
+  similar triangles have the same ratios when we divide their sides
+  Y
+  |.
+  |   .
+  |      .  C
+  |         .
+  |         |   .
+  |         |      .
+  |         |         .
+  -----------------------.
+  X         B            A
+
+  BC/XY = AB/AX
+  if AB = 1 then BC = XY/AX
+  else BC = (1/XY) * (AB/AX) then BC = (1*AB) / (XY/AX)
+  C.x = Y.x/X.z
+  basically: you divide by Z
+ */
 vec2_t perspective_projection(vec3_t pt, float fov) {
     float x, y;
-    x = pt.x / pt.z;
-    y = pt.y / pt.z;
-    return vec2_new(x * fov, y * fov);
+    x = (pt.x * fov) / pt.z;
+    y = (pt.y * fov) / pt.z;
+    return vec2_new(x, y);
 }

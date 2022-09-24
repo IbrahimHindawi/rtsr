@@ -32,3 +32,11 @@ vec3_t vec3_rotate_z(vec3_t v, float angle) {
 	);
 	return rotated_vector;
 }
+vec3_t vec3_scalar_multiply(vec3_t v, float scalar){
+    vec3_t scaled_vector = {0};
+    v.x *= scalar;
+    v.y *= scalar;
+    v.z *= scalar;
+    scaled_vector = v;
+    return scaled_vector;
+}

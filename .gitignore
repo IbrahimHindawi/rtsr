@@ -4,3 +4,6 @@ htmldocs/
 bin/*
 !bin/keepme.txt
 *.swp
+*.swo
+win/.vs
+win/x64
