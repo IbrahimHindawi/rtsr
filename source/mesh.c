@@ -25,5 +25,3 @@ face_t prims[numprims] = {
 	{6, 8, 1},
 	{6, 1, 4}
 };
-
-

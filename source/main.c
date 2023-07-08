@@ -25,7 +25,9 @@ int previous_frame_time = 0;
 
 vec3_t render_verts[numverts] = {0};
 vec2_t prjctd_verts[numverts] = {0};
-triangle_t render_tris[numprims] = {0};
+// triangle_t render_tris[numprims] = {0};
+Array triangles_array = {0};
+triangle_t *render_tris = NULL;
 
 float scene_angle = 0.0f;
 vec3_t camera_position = {0};
@@ -33,13 +35,14 @@ vec3_t camera_position = {0};
 uint32_t color = 0x00FF00FF;
 
 void setup(void) {
-    camera_position = vec3_new(0.0f, 0.0f, -5.0f);
-    color_buffer = (uint32_t*) malloc(sizeof(uint32_t) * window_width * window_height);
+    camera_position = vec3_new(0.0f, 0.0f, -3.0f);
+    color_buffer = malloc(sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
-        printf("Unable to allocate memory.");
+        printf("Unable to allocate color_buffer memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 }
+
 void input(void) {
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -57,7 +60,10 @@ void input(void) {
         break;
     }
 }
+
 void update(void) {
+    render_tris = array_create(&triangles_array, sizeof(triangle_t), 0);
+
     previous_frame_time = SDL_GetTicks();
     int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
@@ -78,10 +84,16 @@ void update(void) {
         prjctd_verts[vertnum] = perspective_projection(render_verts[vertnum], FOV);
     }
     for (int trinum = 0; trinum < numprims; trinum++) {
-        render_tris[trinum].a = prjctd_verts[trinum * 3 + 0];
-        render_tris[trinum].b = prjctd_verts[trinum * 3 + 1];
-        render_tris[trinum].c = prjctd_verts[trinum * 3 + 2];
+        // render_tris[trinum].a = prjctd_verts[trinum * 3 + 0];
+        // render_tris[trinum].b = prjctd_verts[trinum * 3 + 1];
+        // render_tris[trinum].c = prjctd_verts[trinum * 3 + 2];
+        triangle_t projected_triangle = {0};
+        projected_triangle.a = prjctd_verts[trinum * 3 + 0];
+        projected_triangle.b = prjctd_verts[trinum * 3 + 1];
+        projected_triangle.c = prjctd_verts[trinum * 3 + 2];
+        render_tris = array_append(&triangles_array, &projected_triangle);
     }
+    printf("array length: %zd\n", triangles_array.length);
     for (int trinum = 0; trinum < numprims; trinum++) {
         render_tris[trinum].a.x += (window_width * 0.5);
         render_tris[trinum].a.y += (window_height * 0.5);
@@ -91,28 +103,32 @@ void update(void) {
         render_tris[trinum].c.y += (window_height * 0.5);
     }
 }
+
 void render(void) {
     draw_grid(0x101010FF, 50);
     for (int primnum = 0; primnum < numprims; primnum++) {
         draw_rectangle(color, render_tris[primnum].a.x, render_tris[primnum].a.y, 2, 2);
         draw_rectangle(color, render_tris[primnum].b.x, render_tris[primnum].b.y, 2, 2);
         draw_rectangle(color, render_tris[primnum].c.x, render_tris[primnum].c.y, 2, 2);
-        draw_triangle(color, render_tris[primnum].a.x, render_tris[primnum].a.y, render_tris[primnum].b.x, render_tris[primnum].b.y, render_tris[primnum].c.x, render_tris[primnum].c.y);
+        draw_triangle(color, render_tris[primnum].a.x, render_tris[primnum].a.y, 
+                             render_tris[primnum].b.x, render_tris[primnum].b.y, 
+                             render_tris[primnum].c.x, render_tris[primnum].c.y);
 
     }
     //draw_line(color, 100, 200, 300, 50);
+    array_destroy(&triangles_array);
+    render_tris = NULL;
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
 }
 
 #ifdef _MSC_VER
-int APIENTRY WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
 #else
 int main(int argc, char *argv[]) {
 #endif
-    Array array = {0};
-    char *handle = array_create(&array, sizeof(char), 3);
+    printf("renderer program start\n");
     is_running = initialize_window();
     setup();
     while(is_running) {

@@ -44,6 +44,7 @@ bool initialize_window(void) {
     //SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
     return true;
 }
+
 void destroy_window(void) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -52,10 +53,12 @@ void destroy_window(void) {
 /*////////////////////////////////////////////////////////////////// 
  * Render
  *//////////////////////////////////////////////////////////////////
+
 void render_color_buffer(void) {
     SDL_UpdateTexture(color_buffer_texture, NULL, color_buffer, (int) (window_width * sizeof(uint32_t)) );
     SDL_RenderCopy(renderer, color_buffer_texture, NULL, NULL);
 }
+
 void clear_color_buffer(uint32_t color) {
     int y, x;
     for (y = 0; y < window_height; y++) {
@@ -64,11 +67,13 @@ void clear_color_buffer(uint32_t color) {
         }
     }
 }
+
 void draw_pixel(uint32_t color, int x, int y) {
     if ( x >= 0 && x < window_width && y >= 0 && window_height) {
     	color_buffer[window_width * y + x] = color;
 	}
 }
+
 void draw_grid(uint32_t color, uint32_t grid_size) {
     int y, x;
     for (y = 0; y < window_height; y++) {
@@ -79,6 +84,7 @@ void draw_grid(uint32_t color, uint32_t grid_size) {
         }
     }
 }
+
 void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
 	for(int x = posx; x < w + posx; x++) {
 		for(int y = posy; y < h + posy; y++) {
@@ -88,6 +94,7 @@ void draw_rectangle(uint32_t color, int posx, int posy, int w, int h) {
 		}
 	}
 }
+
 void draw_line(uint32_t color, int x0, int y0, int x1, int y1) {
     int delta_x = (x1 - x0);
     int delta_y = (y1 - y0);
@@ -102,6 +109,7 @@ void draw_line(uint32_t color, int x0, int y0, int x1, int y1) {
         cur_y += y_inc;
     }
 }
+
 void draw_triangle(uint32_t color, int x0, int y0, int x1, int y1, int x2, int y2) {
     draw_line(color, x0, y0, x1, y1);
     draw_line(color, x1, y1, x2, y2);
@@ -128,7 +136,8 @@ void draw_triangle(uint32_t color, int x0, int y0, int x1, int y1, int x2, int y
   else BC = (1/XY) * (AB/AX) then BC = (1*AB) / (XY/AX)
   C.x = Y.x/X.z
   basically: you divide by Z
- */
+*/
+
 vec2_t perspective_projection(vec3_t pt, float fov) {
     float x, y;
     x = (pt.x * fov) / pt.z;
