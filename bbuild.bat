@@ -15,12 +15,12 @@ set dsna_path=%root%\c-dsna
 
 set vcpkg_path=%root%\vcpkg\installed\x64-windows
 
-set cfiles=..\src\%project_name%.c^
-    ..\src\display.c^
-    ..\src\salloc.c^
-    ..\src\vector.c^
-    ..\src\triangle.c^
-    ..\src\mesh.c^
+set cfiles=..\source\%project_name%.c^
+    ..\source\display.c^
+    ..\source\salloc.c^
+    ..\source\vector.c^
+    ..\source\triangle.c^
+    ..\source\mesh.c^
     %dsna_path%\source\Array.c
 
 set ifiles=/I%vcpkg_path%\include /I%dsna_path%\include
