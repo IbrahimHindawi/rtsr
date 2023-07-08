@@ -16,3 +16,4 @@ Linux:
 Dependencies:  
 UNIX-based: sdl2 library  
 WIN-based: visual studio 19 + vcpkg  
+c-dsna: https://www.github.com/IbrahimHindawi/c-dsna
