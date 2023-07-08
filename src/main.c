@@ -15,6 +15,8 @@
 #include "vector.h"
 #include "mesh.h"
 
+#include "Array.h"
+
 #define FPS 30
 #define frame_target_time (1000/FPS)
 #define FOV 100.0f
@@ -109,6 +111,8 @@ int APIENTRY WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 #else
 int main(int argc, char *argv[]) {
 #endif
+    Array array = {0};
+    char *handle = array_create(&array, sizeof(char), 3);
     is_running = initialize_window();
     setup();
     while(is_running) {

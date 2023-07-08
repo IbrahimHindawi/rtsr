@@ -5,19 +5,32 @@ mkdir build
 rem go to build dir
 pushd build
 
-rem main exe name
 set project_name=main
 
-rem compiler path
 set cl_path="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\Hostx86\x64"
 
-rem package manager path
-set vcpkg_path=%userprofile%\vcpkg\installed\x64-windows
+set root=C:\devel
+
+set dsna_path=%root%\c-dsna
+
+set vcpkg_path=%root%\vcpkg\installed\x64-windows
+
+set cfiles=..\src\%project_name%.c^
+    ..\src\display.c^
+    ..\src\salloc.c^
+    ..\src\vector.c^
+    ..\src\triangle.c^
+    ..\src\mesh.c^
+    %dsna_path%\source\Array.c
+
+set ifiles=/I%vcpkg_path%\include /I%dsna_path%\include
+
+set libs=user32.lib gdi32.lib %vcpkg_path%\lib\SDL2.lib
 
 rem compiler command
-%cl_path%\cl.exe /nologo ..\src\%project_name%.c ..\src\display.c ..\src\salloc.c ..\src\vector.c ..\src\triangle.c ..\src\mesh.c /DEBUG:FULL /Z7 /I%vcpkg_path%\include user32.lib gdi32.lib %vcpkg_path%\lib\SDL2.lib
+%cl_path%\cl.exe /nologo %cfiles% /DEBUG:FULL /Z7 %ifiles% %libs%
 
-rem add dynamic lib with exe
+rem copy dll to exe location
 XCOPY /Q /S /Y %vcpkg_path%\bin\SDL2.dll .
 
 popd
