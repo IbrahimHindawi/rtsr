@@ -5,10 +5,10 @@
 #include "triangle.h"
 
 #define numpts 8
-extern vec3_t points[numpts];
+extern vec3_t cube_points[numpts];
 
 #define numprims (6 * 2)
-extern face_t prims[numprims];
+extern face_t cube_prims[numprims];
 
 #define numverts (numprims * 3)
 

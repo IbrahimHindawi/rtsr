@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-vec3_t points[numpts] = {
+vec3_t cube_points[numpts] = {
 	{-1.0f, -1.0f, -1.0f}, //1
 	{-1.0f,  1.0f, -1.0f}, //2
 	{ 1.0f,  1.0f, -1.0f}, //3
@@ -11,7 +11,7 @@ vec3_t points[numpts] = {
 	{-1.0f, -1.0f,  1.0f}  //8
 };
 
-face_t prims[numprims] = {
+face_t cube_prims[numprims] = {
 	{1, 2, 3},
 	{1, 3, 4},
 	{4, 3, 5},

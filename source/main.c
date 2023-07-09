@@ -14,6 +14,7 @@
 #include "display.h"
 #include "vector.h"
 #include "mesh.h"
+#include "geometry.h"
 
 #include "Array.h"
 
@@ -23,11 +24,15 @@
 
 int previous_frame_time = 0;
 
-vec3_t render_verts[numverts] = {0};
-vec2_t prjctd_verts[numverts] = {0};
+vec3_t raw_verts[numverts] = {0};
+vec2_t ren_verts[numverts] = {0};
+
 // triangle_t render_tris[numprims] = {0};
 Array triangles_array = {0};
 triangle_t *render_tris = NULL;
+
+Array circle_points = {0};
+vec3_t *circle_points_handle = NULL;
 
 float scene_angle = 0.0f;
 vec3_t camera_position = {0};
@@ -41,6 +46,12 @@ void setup(void) {
         printf("Unable to allocate color_buffer memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
+
+    circle_points_handle = array_create(&circle_points, sizeof(vec3_t), 64);
+    create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
+    array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
+    printf("sin(0.0f) = %f\n", sin(0.0f));
+    printf("cos(0.0f) = %f\n", cos(0.0f));
 }
 
 void input(void) {
@@ -70,30 +81,30 @@ void update(void) {
         SDL_Delay(time_to_wait);
     }
     scene_angle += 0.1f;
+
     for (int primnum = 0; primnum < numprims; primnum++) {
-        face_t prim = prims[primnum];
-        render_verts[primnum * 3 + 0] = points[prim.a - 1];
-        render_verts[primnum * 3 + 1] = points[prim.b - 1];
-        render_verts[primnum * 3 + 2] = points[prim.c - 1];
+        face_t prim = cube_prims[primnum];
+        raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
+        raw_verts[primnum * 3 + 1] = cube_points[prim.b - 1];
+        raw_verts[primnum * 3 + 2] = cube_points[prim.c - 1];
     }
+
     for (int vertnum = 0; vertnum < numverts; vertnum++) {
-        render_verts[vertnum] = vec3_rotate_x(render_verts[vertnum], scene_angle);
-        render_verts[vertnum] = vec3_rotate_y(render_verts[vertnum], scene_angle);
-        render_verts[vertnum] = vec3_rotate_z(render_verts[vertnum], scene_angle);
-        render_verts[vertnum].z += camera_position.z;
-        prjctd_verts[vertnum] = perspective_projection(render_verts[vertnum], FOV);
+        raw_verts[vertnum] = vec3_rotate_x(raw_verts[vertnum], scene_angle);
+        raw_verts[vertnum] = vec3_rotate_y(raw_verts[vertnum], scene_angle);
+        raw_verts[vertnum] = vec3_rotate_z(raw_verts[vertnum], scene_angle);
+        raw_verts[vertnum].z += camera_position.z;
+        ren_verts[vertnum] = perspective_projection(raw_verts[vertnum], FOV);
     }
+
     for (int trinum = 0; trinum < numprims; trinum++) {
-        // render_tris[trinum].a = prjctd_verts[trinum * 3 + 0];
-        // render_tris[trinum].b = prjctd_verts[trinum * 3 + 1];
-        // render_tris[trinum].c = prjctd_verts[trinum * 3 + 2];
         triangle_t projected_triangle = {0};
-        projected_triangle.a = prjctd_verts[trinum * 3 + 0];
-        projected_triangle.b = prjctd_verts[trinum * 3 + 1];
-        projected_triangle.c = prjctd_verts[trinum * 3 + 2];
+        projected_triangle.a = ren_verts[trinum * 3 + 0];
+        projected_triangle.b = ren_verts[trinum * 3 + 1];
+        projected_triangle.c = ren_verts[trinum * 3 + 2];
         render_tris = array_append(&triangles_array, &projected_triangle);
     }
-    printf("array length: %zd\n", triangles_array.length);
+
     for (int trinum = 0; trinum < numprims; trinum++) {
         render_tris[trinum].a.x += (window_width * 0.5);
         render_tris[trinum].a.y += (window_height * 0.5);
@@ -115,6 +126,11 @@ void render(void) {
                              render_tris[primnum].c.x, render_tris[primnum].c.y);
 
     }
+    for (int point_count = 0; point_count < circle_points.length; point_count++) {
+        draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
+                                   circle_points_handle[point_count].y + 150.0f, 2, 2);
+
+    }
     //draw_line(color, 100, 200, 300, 50);
     array_destroy(&triangles_array);
     render_tris = NULL;
@@ -124,11 +140,13 @@ void render(void) {
 }
 
 #ifdef _MSC_VER
-int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
+// int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
+int main(int argc, char *argv[]) {
 #else
 int main(int argc, char *argv[]) {
 #endif
-    printf("renderer program start\n");
+    // printf("renderer program start\n");
+
     is_running = initialize_window();
     setup();
     while(is_running) {
@@ -137,6 +155,7 @@ int main(int argc, char *argv[]) {
         render();
     }
     free(color_buffer);
+    array_destroy(&circle_points);
     destroy_window();
     return 0;
 }

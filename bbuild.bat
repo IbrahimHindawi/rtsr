@@ -21,6 +21,7 @@ set cfiles=..\source\%project_name%.c^
     ..\source\vector.c^
     ..\source\triangle.c^
     ..\source\mesh.c^
+    ..\source\geometry.c^
     %dsna_path%\source\Array.c
 
 set ifiles=/I%vcpkg_path%\include /I%dsna_path%\include
@@ -28,7 +29,7 @@ set ifiles=/I%vcpkg_path%\include /I%dsna_path%\include
 set libs=user32.lib gdi32.lib %vcpkg_path%\lib\SDL2.lib
 
 rem compiler command
-%cl_path%\cl.exe /nologo %cfiles% /DEBUG:FULL /Z7 %ifiles% %libs%
+%cl_path%\cl.exe /nologo %cfiles% /DEBUG:FULL /Z7 %ifiles% %libs% 
 
 rem copy dll to exe location
 XCOPY /Q /S /Y %vcpkg_path%\bin\SDL2.dll .
