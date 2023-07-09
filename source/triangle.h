@@ -13,4 +13,5 @@ typedef struct {
     vec2_t b;
     vec2_t c;
 } triangle_t;
+
 #endif
