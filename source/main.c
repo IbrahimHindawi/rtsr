@@ -24,19 +24,21 @@
 
 int previous_frame_time = 0;
 
+// cube data
 vec3_t raw_verts[numverts] = {0};
 vec2_t ren_verts[numverts] = {0};
-
-// triangle_t ren_tris[numprims] = {0};
 Array triangles_array = {0};
-triangle_t *ren_tris = NULL;
+triangle_t *tris_handle = NULL;
 
+// circle data
+#define circle_npts 32
 Array circle_points = {0};
 vec3_t *circle_points_handle = NULL;
 
 Array circle_indices = {0};
 face_t *circle_indices_handle = NULL;
 
+// scene data
 float scene_angle = 0.0f;
 vec3_t camera_position = {0};
 
@@ -50,11 +52,11 @@ void setup(void) {
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
-    circle_points_handle = array_create(&circle_points, sizeof(vec3_t), 32);
+    circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
     array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
 
-    circle_indices_handle = array_create(&circle_indices, sizeof(face_t), 32);
+    circle_indices_handle = array_create(&circle_indices, sizeof(face_t), circle_npts);
     create_circle_indices(circle_indices_handle, circle_indices.length);
     array_print_struct(circle_indices, circle_indices_handle, facetfmt(circle_indices_handle));
 }
@@ -78,7 +80,7 @@ void input(void) {
 }
 
 void update(void) {
-    ren_tris = array_create(&triangles_array, sizeof(triangle_t), 0);
+    tris_handle = array_create(&triangles_array, sizeof(triangle_t), 0);
 
     previous_frame_time = SDL_GetTicks();
     int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
@@ -87,7 +89,7 @@ void update(void) {
     }
     scene_angle += 0.1f;
 
-    // initialize vertex buffer
+    // reload vertex buffer
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = cube_prims[primnum];
         raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
@@ -112,19 +114,19 @@ void update(void) {
         projected_triangle.a = ren_verts[trinum * 3 + 0];
         projected_triangle.b = ren_verts[trinum * 3 + 1];
         projected_triangle.c = ren_verts[trinum * 3 + 2];
-        ren_tris = array_append(&triangles_array, &projected_triangle);
+        tris_handle = array_append(&triangles_array, &projected_triangle);
     }
 }
 
 void render(void) {
     draw_grid(0x101010FF, 50);
     for (int primnum = 0; primnum < numprims; primnum++) {
-        draw_rectangle(color, ren_tris[primnum].a.x, ren_tris[primnum].a.y, 2, 2);
-        draw_rectangle(color, ren_tris[primnum].b.x, ren_tris[primnum].b.y, 2, 2);
-        draw_rectangle(color, ren_tris[primnum].c.x, ren_tris[primnum].c.y, 2, 2);
-        draw_triangle(color, ren_tris[primnum].a.x, ren_tris[primnum].a.y, 
-                             ren_tris[primnum].b.x, ren_tris[primnum].b.y, 
-                             ren_tris[primnum].c.x, ren_tris[primnum].c.y);
+        draw_rectangle(color, tris_handle[primnum].a.x, tris_handle[primnum].a.y, 2, 2);
+        draw_rectangle(color, tris_handle[primnum].b.x, tris_handle[primnum].b.y, 2, 2);
+        draw_rectangle(color, tris_handle[primnum].c.x, tris_handle[primnum].c.y, 2, 2);
+        draw_triangle(color, tris_handle[primnum].a.x, tris_handle[primnum].a.y, 
+                             tris_handle[primnum].b.x, tris_handle[primnum].b.y, 
+                             tris_handle[primnum].c.x, tris_handle[primnum].c.y);
 
     }
     for (int point_count = 0; point_count < circle_points.length; point_count++) {
@@ -134,7 +136,7 @@ void render(void) {
     }
     //draw_line(color, 100, 200, 300, 50);
     array_destroy(&triangles_array);
-    ren_tris = NULL;
+    tris_handle = NULL;
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
