@@ -55,3 +55,43 @@ vec3_t vec3_scalar_add(vec3_t v, float scalar){
     result_vector = v;
     return result_vector;
 }
+
+
+/*////////////////////////////////////////////////////////////////// 
+ * Projection
+ *//////////////////////////////////////////////////////////////////
+/*
+  similar triangles have the same ratios when we divide their sides
+  Y
+  |.
+  |   .
+  |      .  C
+  |         .
+  |         |   .
+  |         |      .
+  |         |         .
+  -----------------------.
+  X         B            A
+
+  BC/XY = AB/AX
+  if AB = 1 then BC = XY/AX
+  else BC = (1/XY) * (AB/AX) then BC = (1*AB) / (XY/AX)
+  C.x = Y.x/X.z
+  basically: you divide by Z
+*/
+
+vec2_t perspective_projection(vec3_t pt, float fov) {
+    float x, y;
+    x = (pt.x * fov) / pt.z;
+    y = (pt.y * fov) / pt.z;
+    return vec2_new(x, y);
+}
+
+vec2_t vec2_screen_centralize(vec2_t v, float screen_width, float screen_height) {
+    vec2_t result = vec2_new(
+        v.x += (screen_width * 0.5),
+        v.y += (screen_height * 0.5)
+        // v.z = v.z
+    );
+    return result;
+}

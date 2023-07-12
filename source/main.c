@@ -82,6 +82,8 @@ void update(void) {
     }
     scene_angle += 0.1f;
 
+    // load data into vertex buffer
+    // can be done once at program start
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = cube_prims[primnum];
         raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
@@ -89,29 +91,24 @@ void update(void) {
         raw_verts[primnum * 3 + 2] = cube_points[prim.c - 1];
     }
 
+    // transform & project data
     for (int vertnum = 0; vertnum < numverts; vertnum++) {
         raw_verts[vertnum] = vec3_rotate_x(raw_verts[vertnum], scene_angle);
         raw_verts[vertnum] = vec3_rotate_y(raw_verts[vertnum], scene_angle);
         raw_verts[vertnum] = vec3_rotate_z(raw_verts[vertnum], scene_angle);
         raw_verts[vertnum].z += camera_position.z;
+
         ren_verts[vertnum] = perspective_projection(raw_verts[vertnum], FOV);
+        ren_verts[vertnum] = vec2_screen_centralize(ren_verts[vertnum], window_width, window_height);
     }
 
+    // triangulate
     for (int trinum = 0; trinum < numprims; trinum++) {
         triangle_t projected_triangle = {0};
         projected_triangle.a = ren_verts[trinum * 3 + 0];
         projected_triangle.b = ren_verts[trinum * 3 + 1];
         projected_triangle.c = ren_verts[trinum * 3 + 2];
         render_tris = array_append(&triangles_array, &projected_triangle);
-    }
-
-    for (int trinum = 0; trinum < numprims; trinum++) {
-        render_tris[trinum].a.x += (window_width * 0.5);
-        render_tris[trinum].a.y += (window_height * 0.5);
-        render_tris[trinum].b.x += (window_width * 0.5);
-        render_tris[trinum].b.y += (window_height * 0.5);
-        render_tris[trinum].c.x += (window_width * 0.5);
-        render_tris[trinum].c.y += (window_height * 0.5);
     }
 }
 

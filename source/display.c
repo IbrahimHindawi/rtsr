@@ -115,32 +115,3 @@ void draw_triangle(uint32_t color, int x0, int y0, int x1, int y1, int x2, int y
     draw_line(color, x1, y1, x2, y2);
     draw_line(color, x2, y2, x0, y0);
 }
-/*////////////////////////////////////////////////////////////////// 
- * Projection
- *//////////////////////////////////////////////////////////////////
-/*
-  similar triangles have the same ratios when we divide their sides
-  Y
-  |.
-  |   .
-  |      .  C
-  |         .
-  |         |   .
-  |         |      .
-  |         |         .
-  -----------------------.
-  X         B            A
-
-  BC/XY = AB/AX
-  if AB = 1 then BC = XY/AX
-  else BC = (1/XY) * (AB/AX) then BC = (1*AB) / (XY/AX)
-  C.x = Y.x/X.z
-  basically: you divide by Z
-*/
-
-vec2_t perspective_projection(vec3_t pt, float fov) {
-    float x, y;
-    x = (pt.x * fov) / pt.z;
-    y = (pt.y * fov) / pt.z;
-    return vec2_new(x, y);
-}
