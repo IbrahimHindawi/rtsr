@@ -7,6 +7,7 @@ typedef struct {
 	int b; 
 	int c;
 } face_t;
+#define facetfmt(handle) "<%d, %d, %d>" " ", (handle)[n].a, (handle)[n].b, (handle)[n].c
 
 typedef struct {
     vec2_t a;
