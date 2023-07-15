@@ -25,10 +25,10 @@
 int previous_frame_time = 0;
 
 // cube data
-vec3_t raw_verts[numverts] = {0};
-vec2_t ren_verts[numverts] = {0};
-Array triangles_array = {0};
-triangle_t *tris_handle = NULL;
+vec3_t cube_raw_verts[numverts] = {0};
+vec2_t cube_ren_verts[numverts] = {0};
+Array cube_tris_array = {0};
+triangle_t *cube_tris_handle = NULL;
 
 // circle data
 #define circle_npts 32
@@ -80,7 +80,7 @@ void input(void) {
 }
 
 void update(void) {
-    tris_handle = array_create(&triangles_array, sizeof(triangle_t), 0);
+    cube_tris_handle = array_create(&cube_tris_array, sizeof(triangle_t), 0);
 
     previous_frame_time = SDL_GetTicks();
     int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
@@ -92,41 +92,41 @@ void update(void) {
     // reload vertex buffer
     for (int primnum = 0; primnum < numprims; primnum++) {
         face_t prim = cube_prims[primnum];
-        raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
-        raw_verts[primnum * 3 + 1] = cube_points[prim.b - 1];
-        raw_verts[primnum * 3 + 2] = cube_points[prim.c - 1];
+        cube_raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
+        cube_raw_verts[primnum * 3 + 1] = cube_points[prim.b - 1];
+        cube_raw_verts[primnum * 3 + 2] = cube_points[prim.c - 1];
     }
 
     // transform & project data
     for (int vertnum = 0; vertnum < numverts; vertnum++) {
-        raw_verts[vertnum] = vec3_rotate_x(raw_verts[vertnum], scene_angle);
-        raw_verts[vertnum] = vec3_rotate_y(raw_verts[vertnum], scene_angle);
-        raw_verts[vertnum] = vec3_rotate_z(raw_verts[vertnum], scene_angle);
-        raw_verts[vertnum].z += camera_position.z;
+        cube_raw_verts[vertnum] = vec3_rotate_x(cube_raw_verts[vertnum], scene_angle);
+        cube_raw_verts[vertnum] = vec3_rotate_y(cube_raw_verts[vertnum], scene_angle);
+        cube_raw_verts[vertnum] = vec3_rotate_z(cube_raw_verts[vertnum], scene_angle);
+        cube_raw_verts[vertnum].z += camera_position.z;
 
-        ren_verts[vertnum] = perspective_projection(raw_verts[vertnum], FOV);
-        ren_verts[vertnum] = vec2_screen_centralize(ren_verts[vertnum], window_width, window_height);
+        cube_ren_verts[vertnum] = perspective_projection(cube_raw_verts[vertnum], FOV);
+        cube_ren_verts[vertnum] = vec2_screen_centralize(cube_ren_verts[vertnum], window_width, window_height);
     }
 
     // triangulate
     for (int trinum = 0; trinum < numprims; trinum++) {
         triangle_t projected_triangle = {0};
-        projected_triangle.a = ren_verts[trinum * 3 + 0];
-        projected_triangle.b = ren_verts[trinum * 3 + 1];
-        projected_triangle.c = ren_verts[trinum * 3 + 2];
-        tris_handle = array_append(&triangles_array, &projected_triangle);
+        projected_triangle.a = cube_ren_verts[trinum * 3 + 0];
+        projected_triangle.b = cube_ren_verts[trinum * 3 + 1];
+        projected_triangle.c = cube_ren_verts[trinum * 3 + 2];
+        cube_tris_handle = array_append(&cube_tris_array, &projected_triangle);
     }
 }
 
 void render(void) {
     draw_grid(0x101010FF, 50);
     for (int primnum = 0; primnum < numprims; primnum++) {
-        draw_rectangle(color, tris_handle[primnum].a.x, tris_handle[primnum].a.y, 2, 2);
-        draw_rectangle(color, tris_handle[primnum].b.x, tris_handle[primnum].b.y, 2, 2);
-        draw_rectangle(color, tris_handle[primnum].c.x, tris_handle[primnum].c.y, 2, 2);
-        draw_triangle(color, tris_handle[primnum].a.x, tris_handle[primnum].a.y, 
-                             tris_handle[primnum].b.x, tris_handle[primnum].b.y, 
-                             tris_handle[primnum].c.x, tris_handle[primnum].c.y);
+        draw_rectangle(color, cube_tris_handle[primnum].a.x, cube_tris_handle[primnum].a.y, 2, 2);
+        draw_rectangle(color, cube_tris_handle[primnum].b.x, cube_tris_handle[primnum].b.y, 2, 2);
+        draw_rectangle(color, cube_tris_handle[primnum].c.x, cube_tris_handle[primnum].c.y, 2, 2);
+        draw_triangle(color, cube_tris_handle[primnum].a.x, cube_tris_handle[primnum].a.y, 
+                             cube_tris_handle[primnum].b.x, cube_tris_handle[primnum].b.y, 
+                             cube_tris_handle[primnum].c.x, cube_tris_handle[primnum].c.y);
 
     }
     for (int point_count = 0; point_count < circle_points.length; point_count++) {
@@ -135,8 +135,7 @@ void render(void) {
 
     }
     //draw_line(color, 100, 200, 300, 50);
-    array_destroy(&triangles_array);
-    tris_handle = NULL;
+    array_destroy(&cube_tris_array);
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
