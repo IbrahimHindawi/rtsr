@@ -13,7 +13,7 @@ extern face_t cube_prims[numprims];
 
 typedef struct {
     Array points;
-    Array tris;
+    Array prims;
     vec3_t rotation;
 } mesh_t;
 
