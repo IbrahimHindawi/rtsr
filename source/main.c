@@ -52,6 +52,8 @@ void setup(void) {
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
+    cube_tris_handle = array_create(&cube_tris_array, sizeof(triangle_t), numprims);
+
     circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
     array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
@@ -80,8 +82,6 @@ void input(void) {
 }
 
 void update(void) {
-    // cube_tris_handle = array_create(&cube_tris_array, sizeof(triangle_t), 0);
-    cube_tris_handle = array_create(&cube_tris_array, sizeof(triangle_t), numprims);
 
     previous_frame_time = SDL_GetTicks();
     int time_to_wait = frame_target_time - (SDL_GetTicks() - previous_frame_time);
@@ -94,14 +94,6 @@ void update(void) {
     for (int pointcount = 0; pointcount < numpts; pointcount++) {
         cube_raw_verts[pointcount] = cube_points[pointcount];
     }
-    /*
-    for (int primnum = 0; primnum < numprims; primnum++) {
-        face_t prim = cube_prims[primnum];
-        cube_raw_verts[primnum * 3 + 0] = cube_points[prim.a - 1];
-        cube_raw_verts[primnum * 3 + 1] = cube_points[prim.b - 1];
-        cube_raw_verts[primnum * 3 + 2] = cube_points[prim.c - 1];
-    }
-    */
 
     // transform & project data
     for (int pointcount = 0; pointcount < numpts; pointcount++) {
@@ -120,7 +112,6 @@ void update(void) {
         projected_triangle.a = cube_ren_verts[cube_prims[trinum].a - 1];
         projected_triangle.b = cube_ren_verts[cube_prims[trinum].b - 1];
         projected_triangle.c = cube_ren_verts[cube_prims[trinum].c - 1];
-        // cube_tris_handle = array_append(&cube_tris_array, &projected_triangle);
         cube_tris_handle[trinum] = projected_triangle;
     }
     return;
@@ -128,43 +119,31 @@ void update(void) {
 
 void render(void) {
     draw_grid(0x101010FF, 50);
-    /*
-    for (int primnum = 0; primnum < numprims; primnum++) {
-        draw_rectangle(color, cube_tris_handle[primnum].a.x, cube_tris_handle[primnum].a.y, 2, 2);
-        draw_rectangle(color, cube_tris_handle[primnum].b.x, cube_tris_handle[primnum].b.y, 2, 2);
-        draw_rectangle(color, cube_tris_handle[primnum].c.x, cube_tris_handle[primnum].c.y, 2, 2);
-        draw_triangle(color, cube_tris_handle[primnum].a.x, cube_tris_handle[primnum].a.y, 
-                             cube_tris_handle[primnum].b.x, cube_tris_handle[primnum].b.y, 
-                             cube_tris_handle[primnum].c.x, cube_tris_handle[primnum].c.y);
 
-    }
-    */
+    // draw cube verts
     for (int pointcount = 0; pointcount < numpts; pointcount++) {
         draw_rectangle(color, cube_ren_verts[pointcount].x, cube_ren_verts[pointcount].y, 2, 2);
     }
+
+    // draw cube tris
     for (int trinum = 0; trinum < numprims; trinum++) {
         draw_triangle(color, cube_tris_handle[trinum].a.x, cube_tris_handle[trinum].a.y, 
                              cube_tris_handle[trinum].b.x, cube_tris_handle[trinum].b.y, 
                              cube_tris_handle[trinum].c.x, cube_tris_handle[trinum].c.y);
     }
+
     for (int point_count = 0; point_count < circle_points.length; point_count++) {
         draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
                                    circle_points_handle[point_count].y + 150.0f, 2, 2);
 
     }
     //draw_line(color, 100, 200, 300, 50);
-    array_destroy(&cube_tris_array);
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
 }
 
-#ifdef _MSC_VER
-// int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow) {
 int main(int argc, char *argv[]) {
-#else
-int main(int argc, char *argv[]) {
-#endif
     printf("\n");
     printf("RTSR: renderer program start:\n");
     printf("\n");
@@ -177,6 +156,7 @@ int main(int argc, char *argv[]) {
         render();
     }
     free(color_buffer);
+    array_destroy(&cube_tris_array);
     array_destroy(&circle_points);
     array_destroy(&circle_indices);
     destroy_window();

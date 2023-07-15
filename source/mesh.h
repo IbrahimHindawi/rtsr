@@ -10,6 +10,4 @@ extern vec3_t cube_points[numpts];
 #define numprims (6 * 2)
 extern face_t cube_prims[numprims];
 
-// #define numverts (numprims * 3)
-
 #endif
