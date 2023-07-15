@@ -20,13 +20,15 @@
 
 #define FPS 30
 #define frame_target_time (1000/FPS)
-#define FOV 100.0f
+#define FOV 1000.0f
 
 int previous_frame_time = 0;
 
 // buffers
-vec2_t vertex_buffer[2048];
-triangle_t tris_buffer[2048];
+#define max_buffer_size 8096
+vec3_t vertex_buffer_[max_buffer_size];
+vec2_t vertex_buffer[max_buffer_size];
+triangle_t tris_buffer[max_buffer_size];
 
 // cube data
 mesh_t cube = {0};
@@ -46,25 +48,42 @@ face_t *circle_indices_handle = NULL;
 vec3_t camera_position = {0};
 
 uint32_t color = 0x00FF00FF;
+#define red 0x0000FFFF
+#define green 0x00FF00FF
+#define blue 0xFF0000FF
 
 void setup(void) {
-    camera_position = vec3_new(0.0f, 0.0f, -3.0f);
+    camera_position = vec3_new(0.0f, 0.0f, -6.0f);
     color_buffer = malloc(sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
         printf("Unable to allocate color_buffer memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
-    mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
-    mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
+    // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
+    // mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
+
+    mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), 0);
+    mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), 0);
+    load_mesh_from_obj("models/pig.obj", &cube.points, &cube.prims);
+    printf("%lld points\n", cube.points.length);
+    printf("%lld prims\n", cube.prims.length);
+
+    mesh_verts_handle = cube.points.data;
+    mesh_prim_handle = cube.prims.data;
+
+    // load vertex & prim buffer
+    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+        vertex_buffer_[pointcount] = mesh_verts_handle[pointcount];
+    }
 
     circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
-    array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
+    // array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
 
     circle_indices_handle = array_create(&circle_indices, sizeof(face_t), circle_npts);
     create_circle_indices(circle_indices_handle, circle_indices.length);
-    array_print_struct(circle_indices, circle_indices_handle, facetfmt(circle_indices_handle));
+    // array_print_struct(circle_indices, circle_indices_handle, facetfmt(circle_indices_handle));
 }
 
 void input(void) {
@@ -95,12 +114,9 @@ void update(void) {
     cube.rotation.y += 0.1f;
     cube.rotation.z += 0.1f;
 
-    // reload vertex & prim buffer
+    // reload vertex buffer
     for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
-        mesh_verts_handle[pointcount] = cube_points[pointcount];
-    }
-    for (int primcount = 0; primcount < cube.prims.length; primcount++) {
-        mesh_prim_handle[primcount] = cube_prims[primcount];
+        mesh_verts_handle[pointcount] = vertex_buffer_[pointcount];
     }
 
     // transform & project data
@@ -115,7 +131,7 @@ void update(void) {
     }
 
     // triangulate
-    for (int trinum = 0; trinum < numprims; trinum++) {
+    for (int trinum = 0; trinum < cube.prims.length; trinum++) {
         triangle_t projected_triangle = {0};
         projected_triangle.a = vertex_buffer[mesh_prim_handle[trinum].a - 1];
         projected_triangle.b = vertex_buffer[mesh_prim_handle[trinum].b - 1];
@@ -130,26 +146,27 @@ void render(void) {
 
     // draw cube verts
     for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
-        draw_rectangle(color, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 2, 2);
+        draw_rectangle(red, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 2, 2);
     }
 
     // draw cube tris
     for (int trinum = 0; trinum < cube.prims.length; trinum++) {
-        draw_triangle(color, tris_buffer[trinum].a.x, tris_buffer[trinum].a.y, 
+        draw_triangle(green, tris_buffer[trinum].a.x, tris_buffer[trinum].a.y, 
                              tris_buffer[trinum].b.x, tris_buffer[trinum].b.y, 
                              tris_buffer[trinum].c.x, tris_buffer[trinum].c.y);
     }
 
     // draw circle points
-    for (int point_count = 0; point_count < circle_points.length; point_count++) {
-        draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
-                                   circle_points_handle[point_count].y + 150.0f, 2, 2);
+    //for (int point_count = 0; point_count < circle_points.length; point_count++) {
+    //    draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
+    //                               circle_points_handle[point_count].y + 150.0f, 2, 2);
+    //}
 
-    }
     //draw_line(color, 100, 200, 300, 50);
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);
+    return;
 }
 
 int main(int argc, char *argv[]) {

@@ -4,6 +4,9 @@
 #include "vector.h"
 #include "triangle.h"
 #include "Array.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
 #define numpts 8
 extern vec3_t cube_points[numpts];
@@ -16,5 +19,7 @@ typedef struct {
     Array prims;
     vec3_t rotation;
 } mesh_t;
+
+void load_mesh_from_obj(char *filename, Array *varray, Array *iarray);
 
 #endif
