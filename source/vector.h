@@ -21,7 +21,7 @@ vec3_t vec3_scalar_add(vec3_t v, float scalar);
 
 vec2_t vec2_new(float x, float y);
 vec2_t perspective_projection(vec3_t pt, float fov);
-vec2_t vec2_screen_centralize(vec2_t v, float screen_width, float screen_height);
+vec2_t vec2_screen_offset(vec2_t v, float screen_width, float screen_height);
 
 #define vec3tfmt(handle) "<%f, %f, %f>" " ", (handle)[n].x, (handle)[n].y, (handle)[n].z
 

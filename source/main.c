@@ -24,10 +24,12 @@
 
 int previous_frame_time = 0;
 
+// vec2_t cube_ren_verts[numpts] = {0};
+vec2_t render_buffer[2048];
+
 // cube data
-vec3_t cube_raw_verts[numpts] = {0};
-vec2_t cube_ren_verts[numpts] = {0};
-Array cube_tris_array = {0};
+mesh_t cube = {0};
+vec3_t *cube_verts_handle = NULL;
 triangle_t *cube_tris_handle = NULL;
 
 // circle data
@@ -39,7 +41,7 @@ Array circle_indices = {0};
 face_t *circle_indices_handle = NULL;
 
 // scene data
-float scene_angle = 0.0f;
+// vec3_t scene_angle = {0};
 vec3_t camera_position = {0};
 
 uint32_t color = 0x00FF00FF;
@@ -52,7 +54,8 @@ void setup(void) {
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
-    cube_tris_handle = array_create(&cube_tris_array, sizeof(triangle_t), numprims);
+    cube_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
+    cube_tris_handle = array_create(&cube.tris, sizeof(triangle_t), numprims);
 
     circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
@@ -88,30 +91,32 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-    scene_angle += 0.1f;
+    cube.rotation.x += 0.1f;
+    cube.rotation.y += 0.1f;
+    cube.rotation.z += 0.1f;
 
     // reload vertex buffer
-    for (int pointcount = 0; pointcount < numpts; pointcount++) {
-        cube_raw_verts[pointcount] = cube_points[pointcount];
+    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+        cube_verts_handle[pointcount] = cube_points[pointcount];
     }
 
     // transform & project data
-    for (int pointcount = 0; pointcount < numpts; pointcount++) {
-        cube_raw_verts[pointcount] = vec3_rotate_x(cube_raw_verts[pointcount], scene_angle);
-        cube_raw_verts[pointcount] = vec3_rotate_y(cube_raw_verts[pointcount], scene_angle);
-        cube_raw_verts[pointcount] = vec3_rotate_z(cube_raw_verts[pointcount], scene_angle);
-        cube_raw_verts[pointcount].z += camera_position.z;
+    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+        cube_verts_handle[pointcount] = vec3_rotate_x(cube_verts_handle[pointcount], cube.rotation.x);
+        cube_verts_handle[pointcount] = vec3_rotate_y(cube_verts_handle[pointcount], cube.rotation.y);
+        cube_verts_handle[pointcount] = vec3_rotate_z(cube_verts_handle[pointcount], cube.rotation.z);
+        cube_verts_handle[pointcount].z += camera_position.z;
 
-        cube_ren_verts[pointcount] = perspective_projection(cube_raw_verts[pointcount], FOV);
-        cube_ren_verts[pointcount] = vec2_screen_centralize(cube_ren_verts[pointcount], window_width, window_height);
+        render_buffer[pointcount] = perspective_projection(cube_verts_handle[pointcount], FOV);
+        render_buffer[pointcount] = vec2_screen_offset(render_buffer[pointcount], window_width, window_height);
     }
 
     // triangulate
     for (int trinum = 0; trinum < numprims; trinum++) {
         triangle_t projected_triangle = {0};
-        projected_triangle.a = cube_ren_verts[cube_prims[trinum].a - 1];
-        projected_triangle.b = cube_ren_verts[cube_prims[trinum].b - 1];
-        projected_triangle.c = cube_ren_verts[cube_prims[trinum].c - 1];
+        projected_triangle.a = render_buffer[cube_prims[trinum].a - 1];
+        projected_triangle.b = render_buffer[cube_prims[trinum].b - 1];
+        projected_triangle.c = render_buffer[cube_prims[trinum].c - 1];
         cube_tris_handle[trinum] = projected_triangle;
     }
     return;
@@ -121,17 +126,18 @@ void render(void) {
     draw_grid(0x101010FF, 50);
 
     // draw cube verts
-    for (int pointcount = 0; pointcount < numpts; pointcount++) {
-        draw_rectangle(color, cube_ren_verts[pointcount].x, cube_ren_verts[pointcount].y, 2, 2);
+    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+        draw_rectangle(color, render_buffer[pointcount].x, render_buffer[pointcount].y, 2, 2);
     }
 
     // draw cube tris
-    for (int trinum = 0; trinum < numprims; trinum++) {
+    for (int trinum = 0; trinum < cube.tris.length; trinum++) {
         draw_triangle(color, cube_tris_handle[trinum].a.x, cube_tris_handle[trinum].a.y, 
                              cube_tris_handle[trinum].b.x, cube_tris_handle[trinum].b.y, 
                              cube_tris_handle[trinum].c.x, cube_tris_handle[trinum].c.y);
     }
 
+    // draw circle points
     for (int point_count = 0; point_count < circle_points.length; point_count++) {
         draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
                                    circle_points_handle[point_count].y + 150.0f, 2, 2);
@@ -156,9 +162,13 @@ int main(int argc, char *argv[]) {
         render();
     }
     free(color_buffer);
-    array_destroy(&cube_tris_array);
+
+    array_destroy(&cube.points);
+    array_destroy(&cube.tris);
+
     array_destroy(&circle_points);
     array_destroy(&circle_indices);
+
     destroy_window();
 
     printf("\n");
