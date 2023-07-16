@@ -87,11 +87,10 @@ vec2_t perspective_projection(vec3_t pt, float fov) {
     return vec2_new(x, y);
 }
 
-vec2_t vec2_screen_offset(vec2_t v, float screen_width, float screen_height) {
+vec2_t vec2_screen_offset(vec2_t v, float x_offset, float y_offset) {
     vec2_t result = vec2_new(
-        v.x += (screen_width * 0.5),
-        v.y += (screen_height * 0.5)
-        // v.z = v.z
+        v.x += x_offset,
+        v.y += y_offset
     );
     return result;
 }

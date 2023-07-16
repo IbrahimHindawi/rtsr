@@ -25,9 +25,9 @@
 int previous_frame_time = 0;
 
 // buffers
-#define max_buffer_size 8096
-vec3_t vertex_buffer_[max_buffer_size];
-vec2_t vertex_buffer[max_buffer_size];
+#define max_buffer_size 8192
+vec3_t model_vertex_buffer[max_buffer_size];
+vec2_t projc_vertex_buffer[max_buffer_size];
 triangle_t tris_buffer[max_buffer_size];
 
 // mesh data
@@ -72,9 +72,9 @@ void setup(void) {
     mesh_verts_handle = mesh.points.data;
     mesh_prim_handle = mesh.prims.data;
 
-    // load vertex & prim buffer
+    // load vertex
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        vertex_buffer_[pointcount] = mesh_verts_handle[pointcount];
+        model_vertex_buffer[pointcount] = mesh_verts_handle[pointcount];
     }
 
     circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
@@ -116,7 +116,7 @@ void update(void) {
 
     // reload vertex buffer
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        mesh_verts_handle[pointcount] = vertex_buffer_[pointcount];
+        mesh_verts_handle[pointcount] = model_vertex_buffer[pointcount];
     }
 
     // transform & project data
@@ -126,16 +126,16 @@ void update(void) {
         mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], mesh.rotation.z);
         mesh_verts_handle[pointcount].z += camera_position.z;
 
-        vertex_buffer[pointcount] = perspective_projection(mesh_verts_handle[pointcount], FOV);
-        vertex_buffer[pointcount] = vec2_screen_offset(vertex_buffer[pointcount], window_width, window_height);
+        projc_vertex_buffer[pointcount] = perspective_projection(mesh_verts_handle[pointcount], FOV);
+        projc_vertex_buffer[pointcount] = vec2_screen_offset(projc_vertex_buffer[pointcount], window_width * 0.5f, window_height * 0.5f);
     }
 
     // triangulate
     for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
         triangle_t projected_triangle = {0};
-        projected_triangle.a = vertex_buffer[mesh_prim_handle[trinum].a - 1];
-        projected_triangle.b = vertex_buffer[mesh_prim_handle[trinum].b - 1];
-        projected_triangle.c = vertex_buffer[mesh_prim_handle[trinum].c - 1];
+        projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
+        projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
+        projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
         tris_buffer[trinum] = projected_triangle;
     }
     return;
@@ -146,7 +146,7 @@ void render(void) {
 
     // draw mesh verts
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        draw_rectangle(blue, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 8, 8);
+        draw_rectangle(blue, projc_vertex_buffer[pointcount].x, projc_vertex_buffer[pointcount].y, 8, 8);
     }
 
     // draw mesh tris
