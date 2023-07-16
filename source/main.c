@@ -65,7 +65,7 @@ void setup(void) {
 
     mesh_verts_handle = array_create(&mesh.points, sizeof(vec3_t), 0);
     mesh_prim_handle = array_create(&mesh.prims, sizeof(face_t), 0);
-    load_mesh_from_obj("models/pig.obj", &mesh.points, &mesh.prims);
+    load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
     printf("%lld points\n", mesh.points.length);
     printf("%lld prims\n", mesh.prims.length);
 
@@ -110,9 +110,9 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-    mesh.rotation.x += 0.1f;
-    mesh.rotation.y += 0.1f;
-    mesh.rotation.z += 0.1f;
+    // mesh.rotation.x += 0.1f;
+    mesh.rotation.y += 0.01f;
+    // mesh.rotation.z += 0.1f;
 
     // reload vertex buffer
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
@@ -146,7 +146,7 @@ void render(void) {
 
     // draw mesh verts
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        draw_rectangle(red, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 2, 2);
+        draw_rectangle(blue, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 8, 8);
     }
 
     // draw mesh tris
