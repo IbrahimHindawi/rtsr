@@ -30,6 +30,7 @@ set libs=user32.lib gdi32.lib %vcpkg_path%\lib\SDL2.lib
 
 rem compiler command
 %cl_path%\cl.exe /nologo %cfiles% /DEBUG:FULL /Z7 %ifiles% %libs% 
+rem %cl_path%\cl.exe /nologo %cfiles% /O2 /Z7 /INCREMENTAL:NO %ifiles% %libs% /link /OPT:REF /OPT:ICF 
 
 rem copy dll to exe location
 XCOPY /Q /S /Y %vcpkg_path%\bin\SDL2.dll .
