@@ -20,6 +20,7 @@ typedef struct {
     vec3_t rotation;
 } mesh_t;
 
+// mesh must have position, uv and normal attributes!
 void load_mesh_from_obj(char *filename, Array *varray, Array *iarray);
 
 #endif

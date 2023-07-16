@@ -30,8 +30,8 @@ vec3_t vertex_buffer_[max_buffer_size];
 vec2_t vertex_buffer[max_buffer_size];
 triangle_t tris_buffer[max_buffer_size];
 
-// cube data
-mesh_t cube = {0};
+// mesh data
+mesh_t mesh = {0};
 vec3_t *mesh_verts_handle = NULL;
 face_t *mesh_prim_handle = NULL;
 
@@ -63,17 +63,17 @@ void setup(void) {
     // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
     // mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
 
-    mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), 0);
-    mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), 0);
-    load_mesh_from_obj("models/pig.obj", &cube.points, &cube.prims);
-    printf("%lld points\n", cube.points.length);
-    printf("%lld prims\n", cube.prims.length);
+    mesh_verts_handle = array_create(&mesh.points, sizeof(vec3_t), 0);
+    mesh_prim_handle = array_create(&mesh.prims, sizeof(face_t), 0);
+    load_mesh_from_obj("models/pig.obj", &mesh.points, &mesh.prims);
+    printf("%lld points\n", mesh.points.length);
+    printf("%lld prims\n", mesh.prims.length);
 
-    mesh_verts_handle = cube.points.data;
-    mesh_prim_handle = cube.prims.data;
+    mesh_verts_handle = mesh.points.data;
+    mesh_prim_handle = mesh.prims.data;
 
     // load vertex & prim buffer
-    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
         vertex_buffer_[pointcount] = mesh_verts_handle[pointcount];
     }
 
@@ -110,20 +110,20 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-    cube.rotation.x += 0.1f;
-    cube.rotation.y += 0.1f;
-    cube.rotation.z += 0.1f;
+    mesh.rotation.x += 0.1f;
+    mesh.rotation.y += 0.1f;
+    mesh.rotation.z += 0.1f;
 
     // reload vertex buffer
-    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
         mesh_verts_handle[pointcount] = vertex_buffer_[pointcount];
     }
 
     // transform & project data
-    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
-        mesh_verts_handle[pointcount] = vec3_rotate_x(mesh_verts_handle[pointcount], cube.rotation.x);
-        mesh_verts_handle[pointcount] = vec3_rotate_y(mesh_verts_handle[pointcount], cube.rotation.y);
-        mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], cube.rotation.z);
+    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
+        mesh_verts_handle[pointcount] = vec3_rotate_x(mesh_verts_handle[pointcount], mesh.rotation.x);
+        mesh_verts_handle[pointcount] = vec3_rotate_y(mesh_verts_handle[pointcount], mesh.rotation.y);
+        mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], mesh.rotation.z);
         mesh_verts_handle[pointcount].z += camera_position.z;
 
         vertex_buffer[pointcount] = perspective_projection(mesh_verts_handle[pointcount], FOV);
@@ -131,7 +131,7 @@ void update(void) {
     }
 
     // triangulate
-    for (int trinum = 0; trinum < cube.prims.length; trinum++) {
+    for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
         triangle_t projected_triangle = {0};
         projected_triangle.a = vertex_buffer[mesh_prim_handle[trinum].a - 1];
         projected_triangle.b = vertex_buffer[mesh_prim_handle[trinum].b - 1];
@@ -144,13 +144,13 @@ void update(void) {
 void render(void) {
     draw_grid(0x101010FF, 50);
 
-    // draw cube verts
-    for (int pointcount = 0; pointcount < cube.points.length; pointcount++) {
+    // draw mesh verts
+    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
         draw_rectangle(red, vertex_buffer[pointcount].x, vertex_buffer[pointcount].y, 2, 2);
     }
 
-    // draw cube tris
-    for (int trinum = 0; trinum < cube.prims.length; trinum++) {
+    // draw mesh tris
+    for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
         draw_triangle(green, tris_buffer[trinum].a.x, tris_buffer[trinum].a.y, 
                              tris_buffer[trinum].b.x, tris_buffer[trinum].b.y, 
                              tris_buffer[trinum].c.x, tris_buffer[trinum].c.y);
@@ -183,8 +183,8 @@ int main(int argc, char *argv[]) {
     }
     free(color_buffer);
 
-    array_destroy(&cube.points);
-    array_destroy(&cube.prims);
+    array_destroy(&mesh.points);
+    array_destroy(&mesh.prims);
 
     array_destroy(&circle_points);
     array_destroy(&circle_indices);
