@@ -53,6 +53,7 @@ uint32_t color = 0x00FF00FF;
 #define blue 0xFF0000FF
 
 void setup(void) {
+
     camera_position = vec3_new(0.0f, 0.0f, -6.0f);
     color_buffer = malloc(sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
@@ -170,6 +171,8 @@ void render(void) {
 }
 
 int main(int argc, char *argv[]) {
+    // vector_test();
+
     printf("\n");
     printf("RTSR: renderer program start:\n");
     printf("\n");
