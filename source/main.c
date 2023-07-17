@@ -28,7 +28,10 @@ int previous_frame_time = 0;
 #define max_buffer_size 8192
 vec3_t model_vertex_buffer[max_buffer_size];
 vec2_t projc_vertex_buffer[max_buffer_size];
-triangle_t tris_buffer[max_buffer_size];
+// triangle_t tris_buffer[max_buffer_size];
+
+Array tris_buffer = {0};
+triangle_t *tris_buffer_handle = NULL;
 
 // mesh data
 mesh_t mesh = {0};
@@ -54,19 +57,21 @@ uint32_t color = 0x00FF00FF;
 
 void setup(void) {
 
-    camera_position = vec3_new(0.0f, 0.0f, -6.0f);
+    // camera_position = vec3_new(0.0f, 0.0f, 6.0f);
     color_buffer = malloc(sizeof(uint32_t) * window_width * window_height);
     if (color_buffer == NULL) {
         printf("Unable to allocate color_buffer memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
 
+
     // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
     // mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
-
+    // load mesh data from file into RAM
     mesh_verts_handle = array_create(&mesh.points, sizeof(vec3_t), 0);
     mesh_prim_handle = array_create(&mesh.prims, sizeof(face_t), 0);
-    load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
+    // load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
+    load_mesh_from_obj("models/cube.obj", &mesh.points, &mesh.prims);
     printf("%lld points\n", mesh.points.length);
     printf("%lld prims\n", mesh.prims.length);
 
@@ -111,9 +116,9 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-    // mesh.rotation.x += 0.1f;
+    mesh.rotation.x += 0.01f;
     mesh.rotation.y += 0.01f;
-    // mesh.rotation.z += 0.1f;
+    mesh.rotation.z += 0.01f;
 
     // reload vertex buffer
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
@@ -125,20 +130,44 @@ void update(void) {
         mesh_verts_handle[pointcount] = vec3_rotate_x(mesh_verts_handle[pointcount], mesh.rotation.x);
         mesh_verts_handle[pointcount] = vec3_rotate_y(mesh_verts_handle[pointcount], mesh.rotation.y);
         mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], mesh.rotation.z);
-        mesh_verts_handle[pointcount].z += camera_position.z;
+        // mesh_verts_handle[pointcount].z -= camera_position.z;
+        mesh_verts_handle[pointcount].z += 5.0f;
 
         projc_vertex_buffer[pointcount] = perspective_projection(mesh_verts_handle[pointcount], FOV);
         projc_vertex_buffer[pointcount] = vec2_screen_offset(projc_vertex_buffer[pointcount], window_width * 0.5f, window_height * 0.5f);
     }
 
-    // triangulate
+    // initialize tris buffer array
+    array_create(&tris_buffer, sizeof(triangle_t), 0);
     for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
-        triangle_t projected_triangle = {0};
-        projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
-        projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
-        projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
-        tris_buffer[trinum] = projected_triangle;
+        prim_t primitive = {0};
+        primitive.a = mesh_verts_handle[mesh_prim_handle[trinum].a - 1];
+        primitive.b = mesh_verts_handle[mesh_prim_handle[trinum].b - 1];
+        primitive.c = mesh_verts_handle[mesh_prim_handle[trinum].c - 1];
+
+        // backface culling
+        vec3_t ab = vec3_sub(primitive.b, primitive.a);
+        vec3_t ac = vec3_sub(primitive.c, primitive.a);
+        vec3_t n = vec3_cross(ab, ac);
+        vec3_t cam_ray = vec3_sub(camera_position, primitive.a);
+        float dot_n_cam = vec3_dot(n, cam_ray);
+        if (dot_n_cam > 0.0f) {
+            triangle_t projected_triangle = {0};
+            projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
+            projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
+            projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
+            tris_buffer_handle = array_append(&tris_buffer, &projected_triangle);
+        }
     }
+
+    // triangulate
+    // for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
+    //     triangle_t projected_triangle = {0};
+    //     projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
+    //     projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
+    //     projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
+    //     tris_buffer[trinum] = projected_triangle;
+    // }
     return;
 }
 
@@ -147,23 +176,32 @@ void render(void) {
 
     // draw mesh verts
     for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        draw_rectangle(blue, projc_vertex_buffer[pointcount].x, projc_vertex_buffer[pointcount].y, 8, 8);
+        draw_rectangle(blue, projc_vertex_buffer[pointcount].x, projc_vertex_buffer[pointcount].y, 2, 2);
+    }
+
+    for (int trinum = 0; trinum < tris_buffer.length; trinum++) {
+        draw_triangle(green, tris_buffer_handle[trinum].a.x, tris_buffer_handle[trinum].a.y, 
+                             tris_buffer_handle[trinum].b.x, tris_buffer_handle[trinum].b.y, 
+                             tris_buffer_handle[trinum].c.x, tris_buffer_handle[trinum].c.y);
     }
 
     // draw mesh tris
-    for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
-        draw_triangle(green, tris_buffer[trinum].a.x, tris_buffer[trinum].a.y, 
-                             tris_buffer[trinum].b.x, tris_buffer[trinum].b.y, 
-                             tris_buffer[trinum].c.x, tris_buffer[trinum].c.y);
-    }
+    // for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
+    //     draw_triangle(green, tris_buffer_handle[trinum].a.x, tris_buffer_handle[trinum].a.y, 
+    //                          tris_buffer_handle[trinum].b.x, tris_buffer_handle[trinum].b.y, 
+    //                          tris_buffer_handle[trinum].c.x, tris_buffer_handle[trinum].c.y);
+    // }
 
     // draw circle points
     //for (int point_count = 0; point_count < circle_points.length; point_count++) {
     //    draw_rectangle(0xFF0000FF, circle_points_handle[point_count].x + 150.0f,
     //                               circle_points_handle[point_count].y + 150.0f, 2, 2);
     //}
-
     //draw_line(color, 100, 200, 300, 50);
+
+    // destroy tris buffer array
+    array_destroy(&tris_buffer);
+
     render_color_buffer();
     clear_color_buffer(0x000000FF);
     SDL_RenderPresent(renderer);

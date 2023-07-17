@@ -56,6 +56,22 @@ vec3_t vec3_scalar_add(vec3_t v, float scalar){
     return result;
 }
 
+vec3_t vec3_add(vec3_t a, vec3_t b) {
+    vec3_t result = {0};
+    result.x = a.x + b.x;
+    result.y = a.y + b.y;
+    result.z = a.z + b.z;
+    return result;
+}
+
+vec3_t vec3_sub(vec3_t a, vec3_t b) {
+    vec3_t result = {0};
+    result.x = a.x - b.x;
+    result.y = a.y - b.y;
+    result.z = a.z - b.z;
+    return result;
+}
+
 float vec3_dot(vec3_t a, vec3_t b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
@@ -67,7 +83,7 @@ vec3_t vec3_cross(vec3_t a, vec3_t b) {
     // y z x
     result.y = a.z * b.x - a.x * b.z;
     // z x y
-    result.z = a.x * b.y - a.y * b.z;
+    result.z = a.x * b.y - a.y * b.x;
     return result;
 }
 

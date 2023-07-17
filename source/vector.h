@@ -20,6 +20,8 @@ vec3_t vec3_rotate_y(vec3_t v, float angle);
 vec3_t vec3_rotate_z(vec3_t v, float angle);
 vec3_t vec3_scalar_multiply(vec3_t v, float scalar);
 vec3_t vec3_scalar_add(vec3_t v, float scalar);
+vec3_t vec3_add(vec3_t a, vec3_t b);
+vec3_t vec3_sub(vec3_t a, vec3_t b);
 float vec3_dot(vec3_t a, vec3_t b);
 vec3_t vec3_cross(vec3_t a, vec3_t b);
 float vec3_magnitude(vec3_t a);
