@@ -55,6 +55,8 @@ uint32_t color = 0x00FF00FF;
 #define green 0x00FF00FF
 #define blue 0xFF0000FF
 
+#define u32 uint32_t 
+
 void setup(void) {
 
     // camera_position = vec3_new(0.0f, 0.0f, 6.0f);
@@ -63,6 +65,7 @@ void setup(void) {
         printf("Unable to allocate color_buffer memory.");
     }
     color_buffer_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
+    u32 hello = 0;
 
 
     // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
@@ -70,8 +73,8 @@ void setup(void) {
     // load mesh data from file into RAM
     mesh_verts_handle = array_create(&mesh.points, sizeof(vec3_t), 0);
     mesh_prim_handle = array_create(&mesh.prims, sizeof(face_t), 0);
-    // load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
-    load_mesh_from_obj("models/cube.obj", &mesh.points, &mesh.prims);
+    load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
+    // load_mesh_from_obj("models/cube.obj", &mesh.points, &mesh.prims);
     printf("%lld points\n", mesh.points.length);
     printf("%lld prims\n", mesh.prims.length);
 
