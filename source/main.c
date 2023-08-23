@@ -16,7 +16,7 @@
 #include "mesh.h"
 #include "geometry.h"
 
-#include "Array.h"
+#include "hkArray.h"
 
 #define FPS 30
 #define frame_target_time (1000/FPS)
@@ -30,7 +30,7 @@ vec3_t model_vertex_buffer[max_buffer_size];
 vec2_t projc_vertex_buffer[max_buffer_size];
 // triangle_t tris_buffer[max_buffer_size];
 
-Array tris_buffer = {0};
+hkArray tris_buffer = {0};
 triangle_t *tris_buffer_handle = NULL;
 
 // mesh data
@@ -40,10 +40,10 @@ face_t *mesh_prim_handle = NULL;
 
 // circle data
 #define circle_npts 32
-Array circle_points = {0};
+hkArray circle_points = {0};
 vec3_t *circle_points_handle = NULL;
 
-Array circle_indices = {0};
+hkArray circle_indices = {0};
 face_t *circle_indices_handle = NULL;
 
 // scene data
@@ -71,9 +71,11 @@ void setup(void) {
     // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
     // mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
     // load mesh data from file into RAM
-    mesh_verts_handle = array_create(&mesh.points, sizeof(vec3_t), 0);
-    mesh_prim_handle = array_create(&mesh.prims, sizeof(face_t), 0);
+    // hkArray tris_buffer = hkArrayCreate(sizeof(triangle_t), 0); 
+    mesh.points = hkArrayCreate(sizeof(vec3_t), 0);
+    mesh.prims = hkArrayCreate(sizeof(face_t), 0);
     load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
+
     // load_mesh_from_obj("models/cube.obj", &mesh.points, &mesh.prims);
     printf("%lld points\n", mesh.points.length);
     printf("%lld prims\n", mesh.prims.length);
@@ -86,11 +88,13 @@ void setup(void) {
         model_vertex_buffer[pointcount] = mesh_verts_handle[pointcount];
     }
 
-    circle_points_handle = array_create(&circle_points, sizeof(vec3_t), circle_npts);
+    circle_points = hkArrayCreate(sizeof(vec3_t), circle_npts);
+    circle_points_handle = circle_points.data;
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
     // array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
 
-    circle_indices_handle = array_create(&circle_indices, sizeof(face_t), circle_npts);
+    circle_indices = hkArrayCreate(sizeof(face_t), circle_npts);
+    circle_indices_handle = circle_indices.data;
     create_circle_indices(circle_indices_handle, circle_indices.length);
     // array_print_struct(circle_indices, circle_indices_handle, facetfmt(circle_indices_handle));
 }
@@ -141,7 +145,7 @@ void update(void) {
     }
 
     // initialize tris buffer array
-    array_create(&tris_buffer, sizeof(triangle_t), 0);
+    tris_buffer = hkArrayCreate(sizeof(triangle_t), 0);
     for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
         prim_t primitive = {0};
         primitive.a = mesh_verts_handle[mesh_prim_handle[trinum].a - 1];
@@ -159,7 +163,7 @@ void update(void) {
             projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
             projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
             projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
-            tris_buffer_handle = array_append(&tris_buffer, &projected_triangle);
+            tris_buffer_handle = hkArrayAppend(&tris_buffer, &projected_triangle);
         }
     }
 
@@ -203,7 +207,7 @@ void render(void) {
     //draw_line(color, 100, 200, 300, 50);
 
     // destroy tris buffer array
-    array_destroy(&tris_buffer);
+    hkArrayDestroy(&tris_buffer);
 
     render_color_buffer();
     clear_color_buffer(0x000000FF);
@@ -227,11 +231,11 @@ int main(int argc, char *argv[]) {
     }
     free(color_buffer);
 
-    array_destroy(&mesh.points);
-    array_destroy(&mesh.prims);
+    hkArrayDestroy(&mesh.points);
+    hkArrayDestroy(&mesh.prims);
 
-    array_destroy(&circle_points);
-    array_destroy(&circle_indices);
+    hkArrayDestroy(&circle_points);
+    hkArrayDestroy(&circle_indices);
 
     destroy_window();
 

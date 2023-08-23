@@ -26,7 +26,7 @@ face_t cube_prims[numprims] = {
 	{6, 1, 4}
 };
 
-void load_mesh_from_obj(char *filename, Array *varray, Array *iarray) {
+void load_mesh_from_obj(char *filename, hkArray *varray, hkArray *iarray) {
     FILE *file;
     file = fopen(filename, "r");
     if (file == NULL) {
@@ -43,7 +43,7 @@ void load_mesh_from_obj(char *filename, Array *varray, Array *iarray) {
         if(strncmp(line, "v ", 2) == 0) {
             vec3_t vertex;
             sscanf(line, "v %f %f %f", &vertex.x, &vertex.y, &vertex.z);
-            array_append(varray, &vertex);
+            hkArrayAppend(varray, &vertex);
         }
         if(strncmp(line, "f ", 2) == 0) {
             int indices[3];
@@ -56,7 +56,7 @@ void load_mesh_from_obj(char *filename, Array *varray, Array *iarray) {
                 &indices[2], &texture[2], &normals[2]
             );
             face_t face = {indices[0], indices[1], indices[2]};
-            array_append(iarray, &face);
+            hkArrayAppend(iarray, &face);
         }
     }
     return;
