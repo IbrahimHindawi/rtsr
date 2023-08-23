@@ -1,8 +1,0 @@
-sdl2 mingw install:
-    https://www.libsdl.org/download-2.0.php
-    SDL2-devel-2.0.14-mingw
-    mkdir libsdl2 in C:\
-    SDL2-2.0.14\x86_64-w64-mingw32\include\SDL2 -> mingw64/include/SDL2
-    SDL2-2.0.14\x86_64-w64-mingw32\lib\*.a -> mingw64/lib
-    SDL2.dll -> PATH
-
