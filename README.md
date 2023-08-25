@@ -9,12 +9,12 @@ Windows:
 * `build.bat -cr`  
 
 Apple:  
--`make`  
--`make run`  
+* `make`  
+* `make run`  
 
 Linux:  
--`make`  
--`make run`  
+* `make`  
+* `make run`  
 
 Dependencies:  
 [SDL2](https://www.libsdl.org/)  
