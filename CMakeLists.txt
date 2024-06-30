@@ -5,6 +5,7 @@ project(${ProjectNameParam} VERSION 1.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_executable(${PROJECT_NAME}
 	source/display.c
@@ -18,7 +19,8 @@ add_executable(${PROJECT_NAME}
 include_directories(source/)
 
 add_subdirectory(extern)
-target_link_libraries(${PROJECT_NAME} PUBLIC haikal)
+include_directories(extern/haikal/src)
+include_directories(extern/haikal/src/meta/gen)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # VCPKG

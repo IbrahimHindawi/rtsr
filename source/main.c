@@ -12,11 +12,11 @@
 
 #include "defines.h"
 #include "display.h"
-#include "vector.h"
-#include "mesh.h"
-#include "geometry.h"
 
-#include "hkArray.h"
+#include "geometry.h"
+#include "mesh.h"
+
+#include <hkArray.h>
 
 #define FPS 30
 #define frame_target_time (1000/FPS)
@@ -26,36 +26,34 @@ int previous_frame_time = 0;
 
 // buffers
 #define max_buffer_size 8192
-vec3_t model_vertex_buffer[max_buffer_size];
-vec2_t projc_vertex_buffer[max_buffer_size];
-// triangle_t tris_buffer[max_buffer_size];
+vec3 model_vertex_buffer[max_buffer_size];
+vec2 projc_vertex_buffer[max_buffer_size];
+// triangle tris_buffer[max_buffer_size];
 
-hkArray tris_buffer = {0};
-triangle_t *tris_buffer_handle = NULL;
+hkArray_triangle tris_buffer = {0};
+triangle *tris_buffer_handle = NULL;
 
 // mesh data
-mesh_t mesh = {0};
-vec3_t *mesh_verts_handle = NULL;
-face_t *mesh_prim_handle = NULL;
+mesh rmesh = {0};
+vec3 *mesh_verts_handle = NULL;
+face *mesh_prim_handle = NULL;
 
 // circle data
 #define circle_npts 32
-hkArray circle_points = {0};
-vec3_t *circle_points_handle = NULL;
+hkArray_vec3 circle_points = {0};
+vec3 *circle_points_handle = NULL;
 
-hkArray circle_indices = {0};
-face_t *circle_indices_handle = NULL;
+hkArray_face circle_indices = {0};
+face *circle_indices_handle = NULL;
 
 // scene data
-// vec3_t scene_angle = {0};
-vec3_t camera_position = {0};
+// vec3 scene_angle = {0};
+vec3 camera_position = {0};
 
 uint32_t color = 0x00FF00FF;
 #define red 0x0000FFFF
 #define green 0x00FF00FF
 #define blue 0xFF0000FF
-
-#define u32 uint32_t 
 
 void setup(void) {
 
@@ -68,32 +66,32 @@ void setup(void) {
     u32 hello = 0;
 
 
-    // mesh_verts_handle = array_create(&cube.points, sizeof(vec3_t), numpts);
-    // mesh_prim_handle = array_create(&cube.prims, sizeof(face_t), numprims);
+    // mesh_verts_handle = array_create(&cube.points, sizeof(vec3), numpts);
+    // mesh_prim_handle = array_create(&cube.prims, sizeof(face), numprims);
     // load mesh data from file into RAM
-    // hkArray tris_buffer = hkArrayCreate(sizeof(triangle_t), 0); 
-    mesh.points = hkArrayCreate(sizeof(vec3_t), 0);
-    mesh.prims = hkArrayCreate(sizeof(face_t), 0);
-    load_mesh_from_obj("models/Ecrevisse.obj", &mesh.points, &mesh.prims);
+    // hkArray tris_buffer = hkArrayCreate(sizeof(triangle), 0); 
+    rmesh.points = hkarray_vec3_create(0);
+    rmesh.prims = hkarray_face_create(0);
+    load_mesh_from_obj("models/Ecrevisse.obj", &rmesh.points, &rmesh.prims);
 
-    // load_mesh_from_obj("models/cube.obj", &mesh.points, &mesh.prims);
-    printf("%lld points\n", mesh.points.length);
-    printf("%lld prims\n", mesh.prims.length);
+    // load_mesh_from_obj("models/cube.obj", &rmesh.points, &rmesh.prims);
+    printf("%lld points\n", rmesh.points.length);
+    printf("%lld prims\n", rmesh.prims.length);
 
-    mesh_verts_handle = mesh.points.data;
-    mesh_prim_handle = mesh.prims.data;
+    mesh_verts_handle = rmesh.points.data;
+    mesh_prim_handle = rmesh.prims.data;
 
     // load vertex
-    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
+    for (int pointcount = 0; pointcount < rmesh.points.length; pointcount++) {
         model_vertex_buffer[pointcount] = mesh_verts_handle[pointcount];
     }
 
-    circle_points = hkArrayCreate(sizeof(vec3_t), circle_npts);
+    circle_points = hkarray_vec3_create(circle_npts);
     circle_points_handle = circle_points.data;
     create_circle_vertices(circle_points_handle, circle_points.length, 100.0f);
     // array_print_struct(circle_points, circle_points_handle, vec3tfmt(circle_points_handle));
 
-    circle_indices = hkArrayCreate(sizeof(face_t), circle_npts);
+    circle_indices = hkarray_face_create(circle_npts);
     circle_indices_handle = circle_indices.data;
     create_circle_indices(circle_indices_handle, circle_indices.length);
     // array_print_struct(circle_indices, circle_indices_handle, facetfmt(circle_indices_handle));
@@ -123,20 +121,20 @@ void update(void) {
     if (time_to_wait > 0 && time_to_wait <= frame_target_time) {
         SDL_Delay(time_to_wait);
     }
-    mesh.rotation.x += 0.01f;
-    mesh.rotation.y += 0.01f;
-    mesh.rotation.z += 0.01f;
+    rmesh.rotation.x += 0.01f;
+    rmesh.rotation.y += 0.01f;
+    rmesh.rotation.z += 0.01f;
 
     // reload vertex buffer
-    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
+    for (int pointcount = 0; pointcount < rmesh.points.length; pointcount++) {
         mesh_verts_handle[pointcount] = model_vertex_buffer[pointcount];
     }
 
     // transform & project data
-    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
-        mesh_verts_handle[pointcount] = vec3_rotate_x(mesh_verts_handle[pointcount], mesh.rotation.x);
-        mesh_verts_handle[pointcount] = vec3_rotate_y(mesh_verts_handle[pointcount], mesh.rotation.y);
-        mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], mesh.rotation.z);
+    for (int pointcount = 0; pointcount < rmesh.points.length; pointcount++) {
+        mesh_verts_handle[pointcount] = vec3_rotate_x(mesh_verts_handle[pointcount], rmesh.rotation.x);
+        mesh_verts_handle[pointcount] = vec3_rotate_y(mesh_verts_handle[pointcount], rmesh.rotation.y);
+        mesh_verts_handle[pointcount] = vec3_rotate_z(mesh_verts_handle[pointcount], rmesh.rotation.z);
         // mesh_verts_handle[pointcount].z -= camera_position.z;
         mesh_verts_handle[pointcount].z += 5.0f;
 
@@ -145,31 +143,31 @@ void update(void) {
     }
 
     // initialize tris buffer array
-    tris_buffer = hkArrayCreate(sizeof(triangle_t), 0);
-    for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
-        prim_t primitive = {0};
+    tris_buffer = hkarray_triangle_create(0);
+    for (int trinum = 0; trinum < rmesh.prims.length; trinum++) {
+        prim primitive = {0};
         primitive.a = mesh_verts_handle[mesh_prim_handle[trinum].a - 1];
         primitive.b = mesh_verts_handle[mesh_prim_handle[trinum].b - 1];
         primitive.c = mesh_verts_handle[mesh_prim_handle[trinum].c - 1];
 
         // backface culling
-        vec3_t ab = vec3_sub(primitive.b, primitive.a);
-        vec3_t ac = vec3_sub(primitive.c, primitive.a);
-        vec3_t n = vec3_cross(ab, ac);
-        vec3_t cam_ray = vec3_sub(camera_position, primitive.a);
+        vec3 ab = vec3_sub(primitive.b, primitive.a);
+        vec3 ac = vec3_sub(primitive.c, primitive.a);
+        vec3 n = vec3_cross(ab, ac);
+        vec3 cam_ray = vec3_sub(camera_position, primitive.a);
         float dot_n_cam = vec3_dot(n, cam_ray);
         if (dot_n_cam > 0.0f) {
-            triangle_t projected_triangle = {0};
+            triangle projected_triangle = {0};
             projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
             projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
             projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
-            tris_buffer_handle = hkArrayAppend(&tris_buffer, &projected_triangle);
+            tris_buffer_handle = hkarray_triangle_append(&tris_buffer, projected_triangle);
         }
     }
 
     // triangulate
-    // for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
-    //     triangle_t projected_triangle = {0};
+    // for (int trinum = 0; trinum < rmesh.prims.length; trinum++) {
+    //     triangle projected_triangle = {0};
     //     projected_triangle.a = projc_vertex_buffer[mesh_prim_handle[trinum].a - 1];
     //     projected_triangle.b = projc_vertex_buffer[mesh_prim_handle[trinum].b - 1];
     //     projected_triangle.c = projc_vertex_buffer[mesh_prim_handle[trinum].c - 1];
@@ -182,7 +180,7 @@ void render(void) {
     draw_grid(0x101010FF, 50);
 
     // draw mesh verts
-    for (int pointcount = 0; pointcount < mesh.points.length; pointcount++) {
+    for (int pointcount = 0; pointcount < rmesh.points.length; pointcount++) {
         draw_rectangle(blue, projc_vertex_buffer[pointcount].x, projc_vertex_buffer[pointcount].y, 2, 2);
     }
 
@@ -193,7 +191,7 @@ void render(void) {
     }
 
     // draw mesh tris
-    // for (int trinum = 0; trinum < mesh.prims.length; trinum++) {
+    // for (int trinum = 0; trinum < rmesh.prims.length; trinum++) {
     //     draw_triangle(green, tris_buffer_handle[trinum].a.x, tris_buffer_handle[trinum].a.y, 
     //                          tris_buffer_handle[trinum].b.x, tris_buffer_handle[trinum].b.y, 
     //                          tris_buffer_handle[trinum].c.x, tris_buffer_handle[trinum].c.y);
@@ -207,7 +205,7 @@ void render(void) {
     //draw_line(color, 100, 200, 300, 50);
 
     // destroy tris buffer array
-    hkArrayDestroy(&tris_buffer);
+    hkarray_triangle_destroy(&tris_buffer);
 
     render_color_buffer();
     clear_color_buffer(0x000000FF);
@@ -231,11 +229,11 @@ int main(int argc, char *argv[]) {
     }
     free(color_buffer);
 
-    hkArrayDestroy(&mesh.points);
-    hkArrayDestroy(&mesh.prims);
+    hkarray_vec3_destroy(&rmesh.points);
+    hkarray_face_destroy(&rmesh.prims);
 
-    hkArrayDestroy(&circle_points);
-    hkArrayDestroy(&circle_indices);
+    hkarray_vec3_destroy(&circle_points);
+    hkarray_face_destroy(&circle_indices);
 
     destroy_window();
 

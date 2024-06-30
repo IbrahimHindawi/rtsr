@@ -6,19 +6,19 @@ typedef struct {
 	int a;
 	int b; 
 	int c;
-} face_t;
+} face;
 #define facetfmt(handle) "<%d, %d, %d>" " ", (handle)[n].a, (handle)[n].b, (handle)[n].c
 
 typedef struct {
-    vec3_t a;
-    vec3_t b;
-    vec3_t c;
-} prim_t;
+    vec3 a;
+    vec3 b;
+    vec3 c;
+} prim;
 
 typedef struct {
-    vec2_t a;
-    vec2_t b;
-    vec2_t c;
-} triangle_t;
+    vec2 a;
+    vec2 b;
+    vec2 c;
+} triangle;
 
 #endif

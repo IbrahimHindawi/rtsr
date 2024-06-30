@@ -6,13 +6,13 @@
  * 3D vector operations
  *//////////////////////////////////////////////////////////////////
 
-vec3_t vec3_new(float x, float y, float z) {
-    vec3_t result = {x, y, z};
+vec3 vec3_new(float x, float y, float z) {
+    vec3 result = {x, y, z};
     return result;
 }
 
-vec3_t vec3_rotate_x(vec3_t v, float angle) {
-	vec3_t rotated_vector = vec3_new(
+vec3 vec3_rotate_x(vec3 v, float angle) {
+	vec3 rotated_vector = vec3_new(
 		v.x,
 		v.y * cos(angle) - v.z * sin(angle),
 		v.y * sin(angle) + v.z * cos(angle)
@@ -20,8 +20,8 @@ vec3_t vec3_rotate_x(vec3_t v, float angle) {
 	return rotated_vector;
 }
 
-vec3_t vec3_rotate_y(vec3_t v, float angle) {
-	vec3_t rotated_vector = vec3_new(
+vec3 vec3_rotate_y(vec3 v, float angle) {
+	vec3 rotated_vector = vec3_new(
 		v.x * cos(angle) - v.z * sin(angle),
 		v.y,
 		v.x * sin(angle) + v.z * cos(angle)
@@ -29,8 +29,8 @@ vec3_t vec3_rotate_y(vec3_t v, float angle) {
 	return rotated_vector;
 }
 
-vec3_t vec3_rotate_z(vec3_t v, float angle) {
-	vec3_t rotated_vector = vec3_new(
+vec3 vec3_rotate_z(vec3 v, float angle) {
+	vec3 rotated_vector = vec3_new(
 		v.x * cos(angle) - v.y * sin(angle),
 		v.x * sin(angle) + v.y * cos(angle),
 		v.z
@@ -38,8 +38,8 @@ vec3_t vec3_rotate_z(vec3_t v, float angle) {
 	return rotated_vector;
 }
 
-vec3_t vec3_scalar_multiply(vec3_t v, float scalar){
-    vec3_t result = {0};
+vec3 vec3_scalar_multiply(vec3 v, float scalar){
+    vec3 result = {0};
     v.x *= scalar;
     v.y *= scalar;
     v.z *= scalar;
@@ -47,8 +47,8 @@ vec3_t vec3_scalar_multiply(vec3_t v, float scalar){
     return result;
 }
 
-vec3_t vec3_scalar_add(vec3_t v, float scalar){
-    vec3_t result = {0};
+vec3 vec3_scalar_add(vec3 v, float scalar){
+    vec3 result = {0};
     v.x += scalar;
     v.y += scalar;
     v.z += scalar;
@@ -56,28 +56,28 @@ vec3_t vec3_scalar_add(vec3_t v, float scalar){
     return result;
 }
 
-vec3_t vec3_add(vec3_t a, vec3_t b) {
-    vec3_t result = {0};
+vec3 vec3_add(vec3 a, vec3 b) {
+    vec3 result = {0};
     result.x = a.x + b.x;
     result.y = a.y + b.y;
     result.z = a.z + b.z;
     return result;
 }
 
-vec3_t vec3_sub(vec3_t a, vec3_t b) {
-    vec3_t result = {0};
+vec3 vec3_sub(vec3 a, vec3 b) {
+    vec3 result = {0};
     result.x = a.x - b.x;
     result.y = a.y - b.y;
     result.z = a.z - b.z;
     return result;
 }
 
-float vec3_dot(vec3_t a, vec3_t b) {
+float vec3_dot(vec3 a, vec3 b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-vec3_t vec3_cross(vec3_t a, vec3_t b) {
-    vec3_t result = {0};
+vec3 vec3_cross(vec3 a, vec3 b) {
+    vec3 result = {0};
     // x y z
     result.x = a.y * b.z - a.z * b.y;
     // y z x
@@ -87,17 +87,17 @@ vec3_t vec3_cross(vec3_t a, vec3_t b) {
     return result;
 }
 
-float vec3_magnitude(vec3_t a) {
+float vec3_magnitude(vec3 a) {
     return sqrt(vec3_dot(a, a));
 }
 
-vec3_t vec3_normalize(vec3_t a) {
+vec3 vec3_normalize(vec3 a) {
     if (a.x == 0.0f && a.y == 0.0f && a.z == 0.0f) {
         return a;
     }
     float magnitude = vec3_magnitude(a);
     float reciprocal = 1.0f / magnitude;
-    vec3_t result = {0};
+    vec3 result = {0};
     result.x = a.x * reciprocal;
     result.y = a.y * reciprocal;
     result.z = a.z * reciprocal;
@@ -128,66 +128,66 @@ vec3_t vec3_normalize(vec3_t a) {
   basically: you divide by Z
 */
 
-vec2_t vec2_new(float x, float y) {
-    vec2_t result = {x, y};
+vec2 vec2_new(float x, float y) {
+    vec2 result = {x, y};
     return result;
 }
 
-vec2_t perspective_projection(vec3_t pt, float fov) {
+vec2 perspective_projection(vec3 pt, float fov) {
     float x, y;
     x = (pt.x * fov) / pt.z;
     y = (pt.y * fov) / pt.z;
     return vec2_new(x, y);
 }
 
-vec2_t vec2_screen_offset(vec2_t v, float x_offset, float y_offset) {
-    vec2_t result = vec2_new(
+vec2 vec2_screen_offset(vec2 v, float x_offset, float y_offset) {
+    vec2 result = vec2_new(
         v.x += x_offset,
         v.y += y_offset
     );
     return result;
 }
 
-float vec2_dot(vec2_t a, vec2_t b) {
+float vec2_dot(vec2 a, vec2 b) {
     return a.x * b.x + a.y * b.y;
 }
 
-float vec2_magnitude(vec2_t a) {
+float vec2_magnitude(vec2 a) {
     return sqrt(vec2_dot(a, a));
 }
 
-vec2_t vec2_normalize(vec2_t a) {
+vec2 vec2_normalize(vec2 a) {
     if (a.x == 0.0f && a.y == 0.0f) {
         return a;
     }
     float magnitude = vec2_magnitude(a);
     float reciprocal = 1.0f / magnitude;
-    vec2_t result = {0};
+    vec2 result = {0};
     result.x = a.x * reciprocal;
     result.y = a.y * reciprocal;
     return result;
 }
 
 void vector_test() {
-    vec3_t v0 = { 1.0f, 0.0f, 0.0f};
-    vec3_t v1 = { 0.0f, 1.0f, 0.0f};
-    vec3_t v2 = {3.0f, 2.0f, 10.0f};
-    vec3_t v3 = {100.0f, 0.0f, 0.0f};
+    vec3 v0 = { 1.0f, 0.0f, 0.0f};
+    vec3 v1 = { 0.0f, 1.0f, 0.0f};
+    vec3 v2 = {3.0f, 2.0f, 10.0f};
+    vec3 v3 = {100.0f, 0.0f, 0.0f};
 
     assert(vec3_dot(v0, v1) == 0.0f);
 
-    vec3_t c = vec3_cross(v0, v1);
+    vec3 c = vec3_cross(v0, v1);
     assert(c.x == 0.0f && c.y == 0.0f && c.z == 1.0f);
 
     float m = vec3_magnitude(v3);
     assert(m == 100.0f);
     printf("magnitude: %f\n", m);
 
-    vec3_t n = vec3_normalize(v3);
+    vec3 n = vec3_normalize(v3);
     assert(n.x == 1.0f && n.y == 0.0f && n.z == 0.0f);
     printf("normalize: <%f, %f, %f>\n", n.x, n.y, n.z);
 
-    vec3_t n2 = vec3_normalize(v2);
+    vec3 n2 = vec3_normalize(v2);
     printf("normalize: <%f, %f, %f>\n", n2.x, n2.y, n2.z);
     printf("magnitude: %f\n", vec3_magnitude(n2));
 
