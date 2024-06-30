@@ -18,5 +18,5 @@ Linux:
 
 Dependencies:  
 [SDL2](https://www.libsdl.org/)  
-[c-dsna](https://www.github.com/IbrahimHindawi/c-dsna)  
+[haikal](https://www.github.com/IbrahimHindawi/haikal)  
 
